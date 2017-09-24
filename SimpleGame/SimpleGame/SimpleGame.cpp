@@ -14,10 +14,10 @@ but WITHOUT ANY WARRANTY.
 #include "Dependencies\freeglut.h"
 
 #include "Renderer.h"
+#include "GameObject.h"
 
 Renderer *g_Renderer = NULL;
-
-int g_aa = -250;
+GameObject Point(0,0,0,20,1,1,1,0);
 
 void RenderScene(void)
 {
@@ -25,11 +25,9 @@ void RenderScene(void)
 	glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
 
 	// Renderer Test
-	g_Renderer->DrawSolidRect(g_aa, 0, 0, 20, 1, 1, 1, 1); //ÁÂÇ¥,Å©±â,RGB
+	g_Renderer->DrawSolidRect(Point.getposX(), Point.getposY(), Point.getposZ(),
+		Point.getsize(), Point.getR(), Point.getG(), Point.getB(),Point.getAlpha());
 	
-	g_aa++*0.01;
-	if (g_aa > 250)
-		g_aa = -250;
 
 	glutSwapBuffers();
 }
