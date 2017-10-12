@@ -25,8 +25,9 @@ void RenderScene(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
-
 	// Renderer Test
+	//Point.Update(0.1, 0.1);
+
 	g_Renderer->DrawSolidRect(Point.getposX(), Point.getposY(), Point.getposZ(),
 		Point.getsize(), Point.getR(), Point.getG(), Point.getB(),Point.getAlpha());
 	g_Renderer->DrawSolidRect(Enemy.getposX(), Enemy.getposY(), Enemy.getposZ(),
@@ -37,13 +38,21 @@ void RenderScene(void)
 	glutSwapBuffers();
 }
 
+
 void Idle(void)
 {
 	RenderScene();
+	Point.Update(0.1,0.1);
 }
 
 void MouseInput(int button, int state, int x, int y)
 {
+	bool Flag;
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+	{
+		Point.setposX(x-250);
+		Point.setposY(250-y);
+	}
 	RenderScene();
 }
 

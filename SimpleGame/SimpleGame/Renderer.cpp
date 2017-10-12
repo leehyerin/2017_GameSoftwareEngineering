@@ -1,5 +1,8 @@
 #include "stdafx.h"
 #include "Renderer.h"
+#include "GameObject.h"
+
+
 
 Renderer::Renderer(int windowSizeX, int windowSizeY)
 {
@@ -27,6 +30,11 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	{
 		m_Initialized = true;
 	}
+
+	GameObject Point(0, 0, 0, 20, 1, 1, 1, 0);
+	GameObject Enemy(0, 200, 0, 50, 1, 0, 0, 0);
+	GameObject Ally(0, -200, 0, 50, 0, 0, 1, 0);
+
 }
 
 bool Renderer::IsInitialized()
