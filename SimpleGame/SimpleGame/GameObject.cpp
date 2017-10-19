@@ -3,16 +3,16 @@
 using namespace std;
 
 int dir = 1;
-float time = 1.0;
+float t_time = 1.0;
 
 GameObject::~GameObject()
 {
 }
 
-void GameObject::Update(float x, float y)
+void GameObject::Update()
 {
-	posX = posX + dir*x*time;
-	posY = posY + dir*y*time;
+	posX = posX + dir*speedX*t_time;
+	posY = posY + dir*speedY*t_time;
 
 	if (posX < -250 || posX > 250 || posY < -250 || posY > 250)
 		if (posX != posY)

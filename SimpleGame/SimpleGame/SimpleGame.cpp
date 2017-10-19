@@ -15,25 +15,27 @@ but WITHOUT ANY WARRANTY.
 
 #include "Renderer.h"
 #include "GameObject.h"
+#include "SceneMgr.h"
 
 Renderer *g_Renderer = NULL;
-GameObject Point(0, 0, 0, 20, 1, 1, 1, 0);
-GameObject Enemy(0, 200, 0, 50, 1, 0, 0, 0);
-GameObject Ally(0, -200, 0, 50, 0, 0, 1, 0);
+
+SceneMgr *g_SceneMgr = NULL;
 
 void RenderScene(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
-	// Renderer Test
-	//Point.Update(0.1, 0.1);
-
-	g_Renderer->DrawSolidRect(Point.getposX(), Point.getposY(), Point.getposZ(),
-		Point.getsize(), Point.getR(), Point.getG(), Point.getB(),Point.getAlpha());
-	g_Renderer->DrawSolidRect(Enemy.getposX(), Enemy.getposY(), Enemy.getposZ(),
-		Enemy.getsize(), Enemy.getR(), Enemy.getG(), Enemy.getB(), Enemy.getAlpha());
-	g_Renderer->DrawSolidRect(Ally.getposX(), Ally.getposY(), Ally.getposZ(),
-		Ally.getsize(), Ally.getR(), Ally.getG(), Ally.getB(), Ally.getAlpha());
+	
+	for (int i = 0; i < 50; ++i)
+		
+		g_Renderer->DrawSolidRect(g_SceneMgr->getObject(i)->getposX(), g_SceneMgr->getObject(i)->getposY(), g_SceneMgr->getObject(i)->getposZ(),
+			20,1,1,1,0);
+	//g_Renderer->DrawSolidRect(Point.getposX(), Point.getposY(), Point.getposZ(),
+	//	Point.getsize(), Point.getR(), Point.getG(), Point.getB(),Point.getAlpha());
+	//g_Renderer->DrawSolidRect(Enemy.getposX(), Enemy.getposY(), Enemy.getposZ(),
+	//	Enemy.getsize(), Enemy.getR(), Enemy.getG(), Enemy.getB(), Enemy.getAlpha());
+	//g_Renderer->DrawSolidRect(Ally.getposX(), Ally.getposY(), Ally.getposZ(),
+	//	Ally.getsize(), Ally.getR(), Ally.getG(), Ally.getB(), Ally.getAlpha());
 
 	glutSwapBuffers();
 }
@@ -42,17 +44,17 @@ void RenderScene(void)
 void Idle(void)
 {
 	RenderScene();
-	Point.Update(0.1,0.1);
+	g_SceneMgr->Update();
 }
 
 void MouseInput(int button, int state, int x, int y)
 {
-	bool Flag;
-	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
-	{
-		Point.setposX(x-250);
-		Point.setposY(250-y);
-	}
+	//bool Flag;
+	//if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+	//{
+	//	g_SceneMgr->getObject->setposX(x-250);
+	//	g_SceneMgr->getObject->setposY(250-y);
+	//}
 	RenderScene();
 }
 
@@ -87,6 +89,7 @@ int main(int argc, char **argv)
 
 	// Initialize Renderer
 	g_Renderer = new Renderer(500, 500);
+	g_SceneMgr = new SceneMgr();
 	if (!g_Renderer->IsInitialized())
 	{
 		std::cout << "Renderer could not be initialized.. \n";
@@ -104,4 +107,5 @@ int main(int argc, char **argv)
 
     return 0;
 }
+
 
