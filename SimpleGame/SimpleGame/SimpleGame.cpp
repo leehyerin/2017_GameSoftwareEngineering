@@ -26,7 +26,7 @@ void RenderScene(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
 	
-	for (int i = 0; i < 50; ++i)
+	for (int i = 0; i < MAX_OBJECTS_COUNT; ++i)
 		
 		g_Renderer->DrawSolidRect(g_SceneMgr->getObject(i)->getposX(), g_SceneMgr->getObject(i)->getposY(), g_SceneMgr->getObject(i)->getposZ(),
 			20,1,1,1,0);

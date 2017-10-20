@@ -2,8 +2,7 @@
 #include "GameObject.h"
 using namespace std;
 
-int dir = 1;
-float t_time = 1.0;
+
 
 GameObject::~GameObject()
 {

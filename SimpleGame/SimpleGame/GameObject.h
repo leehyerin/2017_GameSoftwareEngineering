@@ -10,6 +10,8 @@ private:
 	float Alpha;
 	float speedX;
 	float speedY;
+	int dir = 1;
+	float t_time = 1.0;
 public:
 	float getposX() { return posX; }
 	float getposY() { return posY; }
@@ -27,8 +29,8 @@ public:
 	GameObject(float x, float y, float z, float size, float r, float g, float b, float a) 
 		: posX(x), posY(y), posZ(z), size(size), R(r), G(g), B(b), Alpha(a) 
 	{
-		speedX = (float)(rand() % 50 - 25);
-		speedY = (float)(rand() % 50 - 25);
+		speedX = (float)(rand() %10)/100;
+		speedY = (float)(rand() %10)/100;
 	}
 	void Update();
 	~GameObject();
