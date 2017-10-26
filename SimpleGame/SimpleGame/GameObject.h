@@ -11,7 +11,6 @@ private:
 	float speedX;
 	float speedY;
 	int dir = 1;
-	float t_time = 1.0;
 public:
 	float getposX() { return posX; }
 	float getposY() { return posY; }
@@ -19,7 +18,10 @@ public:
 	void setposX(float x) { posX = x; }
 	void setposY(float y) { posY = y; }
 	void setposZ(float z) { posZ = z; }
-	float getsize() { return size; }
+	void setR(float r) { R = r; };
+	void setG(float g) { G = g; };
+	void setB(float b) { B = b; };
+	float getSize() { return size; }
 	float getR() { return R; }
 	float getG() { return G; }
 	float getB() { return B; }
@@ -29,10 +31,10 @@ public:
 	GameObject(float x, float y, float z, float size, float r, float g, float b, float a) 
 		: posX(x), posY(y), posZ(z), size(size), R(r), G(g), B(b), Alpha(a) 
 	{
-		speedX = (float)(rand() %10)/100;
-		speedY = (float)(rand() %10)/100;
+		speedX = (float)(rand() %10);
+		speedY = (float)(rand() %10);
 	}
-	void Update();
+	void Update(float elapsedTime);
 	~GameObject();
 
 

@@ -6,3 +6,4 @@
 #include <tchar.h>
 #include <stdlib.h>
 #include <time.h>
+#include <Windows.h>

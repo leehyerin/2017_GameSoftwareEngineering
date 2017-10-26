@@ -21,22 +21,19 @@ Renderer *g_Renderer = NULL;
 
 SceneMgr *g_SceneMgr = NULL;
 
+float g_prevTime = 0.f;
+
 void RenderScene(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
 	
+
 	for (int i = 0; i < MAX_OBJECTS_COUNT; ++i)
 		
 		g_Renderer->DrawSolidRect(g_SceneMgr->getObject(i)->getposX(), g_SceneMgr->getObject(i)->getposY(), g_SceneMgr->getObject(i)->getposZ(),
-			20,1,1,1,0);
-	//g_Renderer->DrawSolidRect(Point.getposX(), Point.getposY(), Point.getposZ(),
-	//	Point.getsize(), Point.getR(), Point.getG(), Point.getB(),Point.getAlpha());
-	//g_Renderer->DrawSolidRect(Enemy.getposX(), Enemy.getposY(), Enemy.getposZ(),
-	//	Enemy.getsize(), Enemy.getR(), Enemy.getG(), Enemy.getB(), Enemy.getAlpha());
-	//g_Renderer->DrawSolidRect(Ally.getposX(), Ally.getposY(), Ally.getposZ(),
-	//	Ally.getsize(), Ally.getR(), Ally.getG(), Ally.getB(), Ally.getAlpha());
-
+			g_SceneMgr->getObject(i)->getSize(),1,1,1,0);
+	
 	glutSwapBuffers();
 }
 
@@ -44,7 +41,8 @@ void RenderScene(void)
 void Idle(void)
 {
 	RenderScene();
-	g_SceneMgr->Update();
+	float currTime = timeGetTime();
+	g_SceneMgr->Update(currTime);
 }
 
 void MouseInput(int button, int state, int x, int y)
@@ -100,6 +98,8 @@ int main(int argc, char **argv)
 	glutKeyboardFunc(KeyInput);
 	glutMouseFunc(MouseInput);
 	glutSpecialFunc(SpecialKeyInput);
+
+	g_prevTime = timeGetTime();
 
 	glutMainLoop();
 
