@@ -13,26 +13,24 @@ but WITHOUT ANY WARRANTY.
 #include "Dependencies\glew.h"
 #include "Dependencies\freeglut.h"
 
-#include "Renderer.h"
 #include "GameObject.h"
 #include "SceneMgr.h"
 
-Renderer *g_Renderer = NULL;
 
 SceneMgr *g_SceneMgr = NULL;
 
-float g_prevTime = 0.f;
+DWORD g_startTime = 0;
 
 void RenderScene(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
-	
+	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+	DWORD endTime = timeGetTime();
+	DWORD elapedTIme = endTime - g_startTime;
+	g_startTime = endTime;
 
-	for (int i = 0; i < MAX_OBJECTS_COUNT; ++i)
-		
-		g_Renderer->DrawSolidRect(g_SceneMgr->getObject(i)->getposX(), g_SceneMgr->getObject(i)->getposY(), g_SceneMgr->getObject(i)->getposZ(),
-			g_SceneMgr->getObject(i)->getSize(),1,1,1,0);
+	g_SceneMgr->Update(elapedTIme);
+	g_SceneMgr->DrawGameObject();
 	
 	glutSwapBuffers();
 }
@@ -41,18 +39,15 @@ void RenderScene(void)
 void Idle(void)
 {
 	RenderScene();
-	float currTime = timeGetTime();
-	g_SceneMgr->Update(currTime);
 }
 
 void MouseInput(int button, int state, int x, int y)
 {
-	//bool Flag;
-	//if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
-	//{
-	//	g_SceneMgr->getObject->setposX(x-250);
-	//	g_SceneMgr->getObject->setposY(250-y);
-	//}
+	bool Flag;
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+	{
+		g_SceneMgr->CreateGameObject(x-250,250-y);
+	}
 	RenderScene();
 }
 
@@ -86,12 +81,7 @@ int main(int argc, char **argv)
 	}
 
 	// Initialize Renderer
-	g_Renderer = new Renderer(500, 500);
-	g_SceneMgr = new SceneMgr();
-	if (!g_Renderer->IsInitialized())
-	{
-		std::cout << "Renderer could not be initialized.. \n";
-	}
+	
 
 	glutDisplayFunc(RenderScene);
 	glutIdleFunc(Idle);
@@ -99,11 +89,13 @@ int main(int argc, char **argv)
 	glutMouseFunc(MouseInput);
 	glutSpecialFunc(SpecialKeyInput);
 
-	g_prevTime = timeGetTime();
+	g_SceneMgr = new SceneMgr();
+
+	g_startTime = timeGetTime();
 
 	glutMainLoop();
 
-	delete g_Renderer;
+	delete g_SceneMgr;
 
     return 0;
 }

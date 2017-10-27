@@ -10,7 +10,9 @@ private:
 	float Alpha;
 	float speedX;
 	float speedY;
-	int dir = 1;
+	int dir;
+	int life;
+	int lifeTime;
 public:
 	float getposX() { return posX; }
 	float getposY() { return posY; }
@@ -26,15 +28,21 @@ public:
 	float getG() { return G; }
 	float getB() { return B; }
 	float getAlpha() { return Alpha; }
+	void minusLife() { --life; }
+	int getLife() { return life; }
+	int getLifeTIme() { return lifeTime; }
 
 public:
 	GameObject(float x, float y, float z, float size, float r, float g, float b, float a) 
 		: posX(x), posY(y), posZ(z), size(size), R(r), G(g), B(b), Alpha(a) 
 	{
-		speedX = (float)(rand() %10);
-		speedY = (float)(rand() %10);
+		speedX =(float)(rand() % 500)-100;
+		speedY =(float)(rand() % 500)-100;
+		dir = 1;
+		life = 1;
+		lifeTime = 100000.f;
 	}
-	void Update(float elapsedTime);
+	void Update(float elapsedTIme);
 	~GameObject();
 
 
