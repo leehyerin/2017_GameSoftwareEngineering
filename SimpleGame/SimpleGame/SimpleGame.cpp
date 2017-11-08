@@ -32,6 +32,7 @@ void RenderScene(void)
 	g_SceneMgr->Update(elapedTIme);
 	g_SceneMgr->DrawGameObject();
 	
+
 	glutSwapBuffers();
 }
 
@@ -79,9 +80,6 @@ int main(int argc, char **argv)
 	{
 		std::cout << "GLEW 3.0 not supported\n ";
 	}
-
-	// Initialize Renderer
-	
 
 	glutDisplayFunc(RenderScene);
 	glutIdleFunc(Idle);
