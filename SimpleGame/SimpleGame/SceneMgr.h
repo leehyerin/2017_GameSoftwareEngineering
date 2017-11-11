@@ -10,6 +10,7 @@ class SceneMgr
 	GameObject* m_bullets[MAX_BULLETS_COUNT];
 	int objectNum;
 	int bulletNum;
+	
 public:
 	SceneMgr();
 	~SceneMgr();
@@ -18,6 +19,7 @@ public:
 
 	void CreateGameObject(float x, float y);
 	void CreateBullet();
+	void CreateArrow(int index);
 	void CollisionTest();
 	bool CollisionBox(float Xi, float Xj, float Yi, float Yj, float size, float sizej);
 

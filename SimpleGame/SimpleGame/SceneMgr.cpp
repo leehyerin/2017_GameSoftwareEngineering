@@ -79,20 +79,33 @@ void SceneMgr::CreateBullet()   //불렛 랜덤 생성 함수
 }
 
 
+void SceneMgr::CreateArrow(int index)
+{
+	
+	
+}
+
+
 void SceneMgr::DrawGameObject()
 {
-	for (int i = 0; i < MAX_OBJECTS_COUNT; ++i)
+	auto m_texCharacter = g_Renderer->CreatePngTexture("./Resources/Slime.png");
+	if (m_objects[0] != NULL)
+	g_Renderer->DrawTexturedRect(m_objects[0]->getposX(), m_objects[0]->getposY(), m_objects[0]->getposZ(), m_objects[0]->getSize(),
+		m_objects[0]->getR(), m_objects[0]->getG(), m_objects[0]->getB(), m_objects[0]->getAlpha(), m_texCharacter);
+
+
+	for (int i = 1; i < MAX_OBJECTS_COUNT; ++i)
 	{
 		if (m_objects[i] != NULL)
 			g_Renderer->DrawSolidRect(getObject(i)->getposX(), getObject(i)->getposY(), getObject(i)->getposZ(),
-				getObject(i)->getSize(), getObject(i)->getR(), getObject(i)->getG(), getObject(i)->getB(), 0);
+				getObject(i)->getSize(), getObject(i)->getR(), getObject(i)->getG(), getObject(i)->getB(), 1);
 	}
 
 	for (int i = 0; i < MAX_BULLETS_COUNT; ++i)
 	{
 		if (m_bullets[i] != NULL)
 			g_Renderer->DrawSolidRect(getBullet(i)->getposX(), getBullet(i)->getposY(), getBullet(i)->getposZ(),
-				getBullet(i)->getSize(), getBullet(i)->getR(), getBullet(i)->getG(), getBullet(i)->getB(), 0);
+				getBullet(i)->getSize(), getBullet(i)->getR(), getBullet(i)->getG(), getBullet(i)->getB(), 1);
 	}
 }
 
@@ -115,6 +128,7 @@ void SceneMgr::Update(float elapsedTime)
 			else
 			{
 				m_objects[i]->Update(elapsedTime, m_objects[i]->getType());
+				CreateArrow(i);
 
 			}
 		}
@@ -157,6 +171,7 @@ void SceneMgr::CollisionTest()
 				{   //빌딩과 오브젝트 충돌체크
 					m_objects[0]->minusLife(m_objects[i]->getLife());
 					m_objects[i]->minusLife(m_objects[i]->getLife());
+					std::cout <<  "빌딩 체력:"<< m_objects[0]->getLife()<<"\n";
 				}
 
 				for (int j = 0; j < MAX_BULLETS_COUNT; ++j)

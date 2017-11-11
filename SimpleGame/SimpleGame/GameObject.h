@@ -5,6 +5,8 @@
 #define OBJECT_BULLET		2
 #define OBJECT_ARROW		3
 
+#define MAX_ARROWS_COUNT 30
+
 class GameObject
 {
 private:
@@ -20,6 +22,7 @@ private:
 	int life;
 	int lifeTime;
 	int type;
+
 public:
 	float getposX() { return posX; }
 	float getposY() { return posY; }
@@ -33,6 +36,9 @@ public:
 	int getType() { return type; }
 	int getLife() { return life; }
 	int getLifeTIme() { return lifeTime; }
+	
+	
+	/*ArrowObject* m_arrows[MAX_ARROWS_COUNT];*/
 
 public:
 	GameObject(float x, float y, float z, float size, float r, float g, float b, float a, int type) 
@@ -45,6 +51,7 @@ public:
 
 		dir = 1;		
 		lifeTime = 10000.f;
+		int arrowNum = 0;
 
 		//라이프 정하기
 		if (type == OBJECT_BUILDING)
@@ -54,11 +61,24 @@ public:
 		else
 			life = 20;
 
+		/*for (int i = 0; i < MAX_ARROWS_COUNT; ++i)
+			m_arrows[i] = NULL;*/
+
 	}
 
 	void Update(float elapsedTIme,int type);
 	~GameObject();
 
-
 };
 
+//
+//class ArrowObject :public GameObject
+//{
+//public:
+//	int arrowNum;
+//	int getArrowNum() { return arrowNum; }
+//	void plusArrow(int plusValue) { arrowNum += plusValue; }
+//
+//	ArrowObject();
+//	void Update(float elapsedTIme);
+//};
