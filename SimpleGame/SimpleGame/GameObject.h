@@ -1,9 +1,12 @@
 #pragma once
 
-#define OBJECT_BUILDING		0
-#define OBJECT_CHARACTER	1	
-#define OBJECT_BULLET		2
-#define OBJECT_ARROW		3
+enum OBJECT_TYPE {
+	OBJECT_BUILDING,
+	OBJECT_CHARACTER,
+	OBJECT_BULLET,
+	OBJECT_ARROW,
+};
+
 
 #define MAX_ARROWS_COUNT 30
 
@@ -33,18 +36,16 @@ public:
 	float getB() { return B; }
 	float getAlpha() { return Alpha; }
 	void minusLife(int minusValue) { life -= minusValue; }
+	void setLife(int value) { life = value; }
 	int getType() { return type; }
 	int getLife() { return life; }
 	int getLifeTIme() { return lifeTime; }
 	
-	
-	/*ArrowObject* m_arrows[MAX_ARROWS_COUNT];*/
-
 public:
 	GameObject(float x, float y, float z, float size, float r, float g, float b, float a, int type) 
 		: posX(x), posY(y), posZ(z), size(size), R(r), G(g), B(b), Alpha(a) ,type(type)
 	{
-		
+		//속도는 랜덤으로 하고싶었어..
 		speedX = (float)((rand() %100) - 50.f)/100.f;
 		speedY = (float)((rand() %100) - 50.f)/100.f;
 		
@@ -57,28 +58,11 @@ public:
 		if (type == OBJECT_BUILDING)
 			life = 600;
 		else if (type == OBJECT_CHARACTER)
-			life = 60;
+			life = 10;
 		else
-			life = 20;
-
-		/*for (int i = 0; i < MAX_ARROWS_COUNT; ++i)
-			m_arrows[i] = NULL;*/
-
+			life = 10;
 	}
 
 	void Update(float elapsedTIme,int type);
-	~GameObject();
 
 };
-
-//
-//class ArrowObject :public GameObject
-//{
-//public:
-//	int arrowNum;
-//	int getArrowNum() { return arrowNum; }
-//	void plusArrow(int plusValue) { arrowNum += plusValue; }
-//
-//	ArrowObject();
-//	void Update(float elapsedTIme);
-//};
