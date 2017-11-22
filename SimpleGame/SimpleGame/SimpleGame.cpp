@@ -20,11 +20,12 @@ but WITHOUT ANY WARRANTY.
 SceneMgr *g_SceneMgr = NULL;
 
 DWORD g_startTime = 0;
+DWORD g_clickTime = 0;
 
 void RenderScene(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	DWORD endTime = timeGetTime();
 	DWORD elapedTIme = endTime - g_startTime;
 	g_startTime = endTime;
@@ -47,7 +48,18 @@ void MouseInput(int button, int state, int x, int y)
 	bool Flag;
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
 	{
-		g_SceneMgr->CreateGameObject(x-250,250-y);
+		if (y < WINDOW_HEIGHT / 2)
+		{
+			std::cout << "※북쪽은 적 진영입니다.\n"; return;
+		}
+
+		if (timeGetTime() - g_clickTime >= 7000.f)
+		{
+			g_clickTime = timeGetTime();
+			g_SceneMgr->CreateGameObject(x - WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - y, TEAM_ALLY);
+		}
+		else
+			std::cout << "※쿨타임:"<<(int)(7000.f - (timeGetTime() - g_clickTime ))/1000 <<"초 남았씁니다.\n"; return;
 	}
 	RenderScene();
 }
@@ -68,7 +80,7 @@ int main(int argc, char **argv)
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(0, 0);
-	glutInitWindowSize(500, 500);
+	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 	glutCreateWindow("Game Software Engineering KPU");
 
 	glewInit();
@@ -90,6 +102,7 @@ int main(int argc, char **argv)
 	g_SceneMgr = new SceneMgr();
 
 	g_startTime = timeGetTime();
+	g_clickTime = timeGetTime();
 
 	glutMainLoop();
 

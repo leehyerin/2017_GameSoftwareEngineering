@@ -3,29 +3,21 @@
 
 Renderer *g_Renderer = NULL;
 DWORD g_Timer = 0;
+DWORD g_Timer_Unit = 0;
+DWORD g_Timer_Arrow = 0;
 
 SceneMgr::SceneMgr()
 {	
-	g_Renderer = new Renderer(500, 500);
+	g_Renderer = new Renderer(WINDOW_WIDTH, WINDOW_HEIGHT);
 	g_Timer = timeGetTime();
+	g_Timer_Unit = timeGetTime();
+	g_Timer_Arrow = timeGetTime();
 
 	if (!g_Renderer->IsInitialized())
 	{
 		std::cout << "Renderer could not be initialized.. \n";
 	}
-
-	
-	m_objects[0] = new GameObject(0, 0, 0, 50, 1, 1, 0, 0, OBJECT_BUILDING);   //오브젝트 0번은 빌딩
-	objectNum = 1;   // 현재 존재하는 오브젝트 개수
-	arrowNum = 0;
-
-	for (int i = 1; i < MAX_OBJECTS_COUNT; ++i)
-		m_objects[i] = NULL;
-
-	for (int i = 0; i < MAX_BULLETS_COUNT; ++i)
-		m_bullets[i] = NULL;
-	for (int i = 0; i < MAX_ARROWS_COUNT; ++i)
-		m_arrows[i] = NULL;
+	InitGameField();
 }
 
 
@@ -33,19 +25,18 @@ SceneMgr::~SceneMgr()
 {
 	delete g_Renderer;
 	g_Renderer = NULL;
-
 }
 
 
-void SceneMgr::CreateGameObject(float x, float y)
+void SceneMgr::CreateGameObject(float x, float y, int type)
 {
 	if (objectNum < MAX_OBJECTS_COUNT)
 	{
-		for (int i = 1; i < MAX_OBJECTS_COUNT; ++i)  //빈 공간 찾는 루프
+		for (int i = 0; i < MAX_OBJECTS_COUNT; ++i)  //빈 공간 찾는 루프
 		{
 			if (m_objects[i] == NULL)
 			{
-				m_objects[i] = new GameObject(x, y, 0, 10, 1, 1, 1, 0, OBJECT_CHARACTER);
+				m_objects[i] = new GameObject({ x, y, 0 }, OBJECT_CHARACTER, type); 
 				++objectNum;
 				break;
 			}
@@ -56,21 +47,24 @@ void SceneMgr::CreateGameObject(float x, float y)
 
 void SceneMgr::CreateBullet()   //불렛 랜덤 생성 함수
 {
-	if (m_objects[0] != NULL)
+	for (int i = 0; i < 6; ++i)
 	{
-		float posX, posY;
-		posX = m_objects[0]->getposX();
-		posY = m_objects[0]->getposY();
-
-		if (bulletNum < MAX_BULLETS_COUNT)
+		if (m_buildings[0] != NULL)
 		{
-			for (int i = 0; i < MAX_BULLETS_COUNT; ++i)  //빈 공간 찾는 루프
+			POS pos;
+			pos.x = m_buildings[i]->getposX();
+			pos.y = m_buildings[i]->getposY();
+
+			if (bulletNum < MAX_BULLETS_COUNT)
 			{
-				if (m_bullets[i] == NULL)
+				for (int j = 0; j < MAX_BULLETS_COUNT; ++j)  //빈 공간 찾는 루프
 				{
-					m_bullets[i] = new GameObject(posX, posY, 0, 2, 1, 0, 0, 0, OBJECT_BULLET);
-					++bulletNum;
-					break;
+					if (m_bullets[j] == NULL)
+					{
+						m_bullets[j] = new GameObject(pos, OBJECT_BULLET, m_buildings[i]->getTeam());
+						++bulletNum;
+						break;
+					}
 				}
 			}
 		}
@@ -78,11 +72,11 @@ void SceneMgr::CreateBullet()   //불렛 랜덤 생성 함수
 }
 
 
-void SceneMgr::CreateArrow(GameObject& object)
+void SceneMgr::CreateArrow(GameObject& const object)
 {
-	float posX, posY;
-	posX = object.getposX();
-	posY = object.getposY();
+	POS pos;
+	pos.x = object.getposX();
+	pos.y = object.getposY();
 
 	if (arrowNum < MAX_ARROWS_COUNT)
 	{
@@ -90,7 +84,7 @@ void SceneMgr::CreateArrow(GameObject& object)
 		{
 			if (m_arrows[i] == NULL)
 			{
-				m_arrows[i] = new GameObject(posX, posY, 0, 2, 0, 5, 0, 0, OBJECT_ARROW);
+				m_arrows[i] = new GameObject(pos, OBJECT_ARROW, object.getTeam());
 				++arrowNum;
 				break;
 			}
@@ -99,29 +93,61 @@ void SceneMgr::CreateArrow(GameObject& object)
 }
 
 
+void SceneMgr::InitGameField()
+{
+	float X = WINDOW_WIDTH / 3.33f;
+	float Y = WINDOW_HEIGHT *0.375;
+
+	m_buildings[0] = new GameObject({ -X, -Y, 0 } , OBJECT_BUILDING, TEAM_ALLY);  //0~2 남  ...아군
+	m_buildings[1] = new GameObject({ 0, -Y-50, 0 }, OBJECT_BUILDING, TEAM_ALLY);
+	m_buildings[2] = new GameObject({ X, -Y, 0 }, OBJECT_BUILDING, TEAM_ALLY);
+	m_buildings[3] = new GameObject({ -X, Y, 0 }, OBJECT_BUILDING, TEAM_ENEMY);     //3~5 북
+	m_buildings[4] = new GameObject({ 0, Y+50, 0 }, OBJECT_BUILDING, TEAM_ENEMY);
+	m_buildings[5] = new GameObject({ X, Y, 0 }, OBJECT_BUILDING, TEAM_ENEMY);
+	
+	buldingNum = 6;
+	objectNum = 0;   // 현재 존재하는 오브젝트 개수
+	arrowNum = 0;
+	bulletNum = 0;
+
+	for (int i = 0; i < MAX_OBJECTS_COUNT; ++i)
+		m_objects[i] = NULL;
+	for (int i = 0; i < MAX_BULLETS_COUNT; ++i)
+		m_bullets[i] = NULL;
+	for (int i = 0; i < MAX_ARROWS_COUNT; ++i)
+		m_arrows[i] = NULL;
+}
+
 void SceneMgr::DrawGameObject()
 {
-	auto m_texCharacter = g_Renderer->CreatePngTexture("./Resources/Slime.png");
-	if (m_objects[0] != NULL)
-		g_Renderer->DrawTexturedRect(m_objects[0]->getposX(), m_objects[0]->getposY(), m_objects[0]->getposZ(), m_objects[0]->getSize(),
-			m_objects[0]->getR(), m_objects[0]->getG(), m_objects[0]->getB(), m_objects[0]->getAlpha(), m_texCharacter);
+	GLuint m_texCharacter1 = g_Renderer->CreatePngTexture("./Resources/Blue_Slime.png");
+	GLuint m_texCharacter2 = g_Renderer->CreatePngTexture("./Resources/Gold_Slime.png");
+	GLuint texture = m_texCharacter1;
+	//빌딩 png 그리기
+	for (int i = 0; i < 6; ++i)
+	{
+		if (i > 2) texture = m_texCharacter2;
 
-
-	for (int i = 1; i < MAX_OBJECTS_COUNT; ++i)  
+		if (m_buildings[i] != NULL)
+		g_Renderer->DrawTexturedRect(m_buildings[i]->getposX(), m_buildings[i]->getposY(), m_buildings[i]->getposZ(), m_buildings[i]->getSize(),
+			m_buildings[i]->getR(), m_buildings[i]->getG(), m_buildings[i]->getB(), m_buildings[i]->getAlpha(), texture);
+	}
+	//캐릭터 그리기
+	for (int i = 0; i < MAX_OBJECTS_COUNT; ++i)  
 	{
 		if (m_objects[i] != NULL)
 			g_Renderer->DrawSolidRect(getObject(i)->getposX(), getObject(i)->getposY(), getObject(i)->getposZ(),
 				getObject(i)->getSize(), getObject(i)->getR(), getObject(i)->getG(), getObject(i)->getB(), 1);
 
 	}
-
+	//불렛 그리기
 	for (int i = 0; i < MAX_BULLETS_COUNT; ++i)
 	{
 		if (m_bullets[i] != NULL)
 			g_Renderer->DrawSolidRect(getBullet(i)->getposX(), getBullet(i)->getposY(), getBullet(i)->getposZ(),
 				getBullet(i)->getSize(), getBullet(i)->getR(), getBullet(i)->getG(), getBullet(i)->getB(), 1);
 	}
-
+	//애로우 그리기
 	for (int i = 0; i < MAX_ARROWS_COUNT; ++i)
 	{
 		if (m_arrows[i] != NULL)
@@ -134,46 +160,64 @@ void SceneMgr::DrawGameObject()
 void SceneMgr::Update(float elapsedTime)
 {
 	CollisionTest();
+    // 빌딩 업데이트
+	for (int i = 0; i < MAX_BUILDING_COUNT; ++i)    
+	{
+		if (m_buildings[i] != NULL)
+		{
+			if (m_buildings[i]->getLife() <= 0 )   //life가 다 닳면 소멸
+			{																		  
+				delete m_buildings[i];
+				m_buildings[i] = NULL;
 
-	for (int i = 0; i < MAX_OBJECTS_COUNT; ++i)    // 빌딩과 게임오브젝트 업데이트
+				--buldingNum;
+			}
+			else
+			{
+				m_buildings[i]->Update(elapsedTime, m_buildings[i]->getType());
+			}
+		}
+	}
+
+	// 캐릭터 업데이트
+	for (int i = 0; i < MAX_OBJECTS_COUNT; ++i)    
 	{
 		if (m_objects[i] != NULL)
 		{
-			if (m_objects[i]->getLife() <= 0 || m_objects[i]->getLifeTIme() < 0.f)   //life가 다 닳거나 lifetime이 다 지나면 소멸
-			{																		 //빌딩,캐릭터 해당
+			if (m_objects[i]->getLife() <= 0 || m_objects[i]->getLifeTIme() <= 0.f)  //life가 다 닳거나 lifetime이 다 지나면 소멸
+			{																		 //캐릭터
 				delete m_objects[i];
 				m_objects[i] = NULL;
-
 				--objectNum;
 			}
 			else
 			{
 				m_objects[i]->Update(elapsedTime, m_objects[i]->getType());
-	
 			}
 		}
 	}
-
-	for (int i = 0; i < MAX_BULLETS_COUNT; ++i)   //불렛 업데이트
+	//불렛 업데이트
+	for (int i = 0; i < MAX_BULLETS_COUNT; ++i)   
 	{
 		if (m_bullets[i] != NULL)
 		{
-			if (m_bullets[i]->getLife() <= 0 || m_bullets[i]->getLifeTIme() < 0.f)
+			if (m_bullets[i]->getLife() <= 0 || m_bullets[i]->getLifeTIme() <= 0.f)
 			{
 				delete m_bullets[i];
 				m_bullets[i] = NULL;			
-				--bulletNum;         
+				--bulletNum;  
 			}
 			else
 				m_bullets[i]->Update(elapsedTime, OBJECT_BULLET);
+
 		}
 	}
-
-	for (int i = 0; i < MAX_ARROWS_COUNT; ++i)   //애로우 업데이트
+	//애로우 업데이트
+	for (int i = 0; i < MAX_ARROWS_COUNT; ++i)   
 	{
 		if (m_arrows[i] != NULL)
 		{
-			if (m_arrows[i]->getLife() <= 0 || m_arrows[i]->getLifeTIme() < 0.f)
+			if (m_arrows[i]->getLife() <= 0 || m_arrows[i]->getLifeTIme() <= 0.f)
 			{
 				delete m_arrows[i];
 				m_arrows[i] = NULL;				
@@ -183,31 +227,38 @@ void SceneMgr::Update(float elapsedTime)
 				m_arrows[i]->Update(elapsedTime, OBJECT_ARROW);
 		}
 	}
-	  //오브젝트로 통일하는 게 가독성이 좀 더 좋을 것 같음
 
-
-	if (timeGetTime() - g_Timer > 500)  // 1000이 1초
+	if (timeGetTime() - g_Timer > 10000.f)  // 1000이 1초
 	{
 		g_Timer = timeGetTime();		
 		CreateBullet();                //불렛 생성
+	}
 
-		for (int i = 1; i < MAX_OBJECTS_COUNT; ++i)
-		{
-			if (m_objects[i] != NULL)
-				CreateArrow(*m_objects[i]); //애로우 생성
-		}
+	// 캐릭터 생성
+	if (timeGetTime() - g_Timer_Unit > 5000.f)
+	{
+		g_Timer_Unit = timeGetTime();
+		POS pos = { rand() % 500 - WINDOW_WIDTH / 2, max(rand() % 400,0) ,0 };
+		CreateGameObject(pos.x, pos.y, TEAM_ENEMY);
+	}
+
+	if (timeGetTime() - g_Timer_Arrow > 3000.f)
+	for (int i = 0; i < MAX_OBJECTS_COUNT; ++i)
+	{
+		g_Timer_Arrow = timeGetTime();
+		if (m_objects[i] != NULL)
+			CreateArrow(*m_objects[i]); //애로우 생성
 	}
 }
 
 
 void SceneMgr::CollisionTest()
 {
-	
 	float Xi, Yi, Xj, Yj;
 	float sizei;
 	int isCollision = 0;
 
-	for (int i = 1; i < MAX_OBJECTS_COUNT; ++i)
+	for (int i = 0; i < MAX_OBJECTS_COUNT; ++i)
 	{
 		if (m_objects[i] != NULL)
 		{
@@ -215,65 +266,89 @@ void SceneMgr::CollisionTest()
 			Yi = m_objects[i]->getposY();
 			sizei = m_objects[i]->getSize();
 
-			if (m_objects[0] != NULL)
+			for (int k = 0; k < MAX_BUILDING_COUNT; ++k)
 			{
-				if (CollisionBox(Xi, m_objects[0]->getposX(), Yi, m_objects[0]->getposY(), sizei, m_objects[0]->getSize()))
-				{   //빌딩과 오브젝트 충돌체크
-					m_objects[0]->minusLife(m_objects[i]->getLife());
-					m_objects[i]->minusLife(m_objects[i]->getLife());
-					std::cout <<  "빌딩 체력:"<< m_objects[0]->getLife()<<"\n";
+				if ((m_buildings[k] != NULL) && (m_buildings[k]->getTeam() != m_objects[i]->getTeam())) //빈공간이 아니면서 팀이 다를 때
+				{
+					if (CollisionBox(Xi, m_buildings[k]->getposX(), Yi, m_buildings[k]->getposY(), sizei, m_buildings[k]->getSize()))
+					{   //빌딩과 캐릭터 충돌체크
+						m_buildings[k]->minusLife(m_objects[i]->getLife());
+						m_objects[i]->minusLife(m_objects[i]->getLife());
+						std::cout << k << "번 빌딩 체력:" << m_buildings[k]->getLife() << "\n";
+					}
 				}
+			}
 
-				for (int j = 0; j < MAX_BULLETS_COUNT; ++j)
-				{   //오브젝트와 불렛 충돌체크
-					if (m_bullets[j] != NULL)
+			for (int j = 0; j < MAX_BULLETS_COUNT; ++j)
+			{   //캐릭터와 불렛 충돌체크
+				if (m_bullets[j] != NULL && m_bullets[j]->getTeam() != m_objects[i]->getTeam())
+				{
+					if (CollisionBox(Xi, m_bullets[j]->getposX(), Yi, m_bullets[j]->getposY(), sizei, m_bullets[j]->getSize()))
 					{
-						if (CollisionBox(Xi, m_bullets[j]->getposX(), Yi, m_bullets[j]->getposY(), sizei, m_bullets[j]->getSize()))
+						m_objects[i]->minusLife(m_bullets[j]->getLife());
+						m_bullets[j]->setLife(0);
+					}
+				}
+			}
+
+			for (int j = 0; j < MAX_ARROWS_COUNT; ++j)
+			{   //캐릭터와 애로우 충돌체크
+				if (m_arrows[j] != NULL&&m_arrows[j]->getTeam() != m_objects[i]->getTeam())
+				{
+					if (CollisionBox(Xi, m_arrows[j]->getposX(), Yi, m_arrows[j]->getposY(), sizei, m_arrows[j]->getSize()))
+					{
+						if (m_arrows[j]->getLifeTIme() < 9998.f)
 						{
-							m_objects[i]->minusLife(m_bullets[j]->getLife());
-							m_bullets[j]->setLife(0);
+							m_objects[i]->minusLife(m_arrows[j]->getLife());
+							m_arrows[j]->setLife(0);
 						}
 					}
 				}
-			
-				for (int j = 0; j < MAX_ARROWS_COUNT; ++j)
-				{   //오브젝트와 애로우 충돌체크
-					if (m_arrows[j] != NULL)
-					{
-						if (CollisionBox(Xi, m_arrows[j]->getposX(), Yi, m_arrows[j]->getposY(), sizei, m_arrows[j]->getSize()))
-						{
-							if (m_arrows[j]->getLifeTIme() < 9998.f)
-							{
-								m_objects[i]->minusLife(m_arrows[j]->getLife());
-								m_arrows[j]->setLife(0);
-							}
-						}
-					}
-				}
-			
 			}
 		}
 	}
 
-	for (int i = 0; i < MAX_ARROWS_COUNT; ++i)
-	{	//빌딩과 애로우 충돌체크
-		if (m_arrows[i] != NULL)
+	for (int k = 0; k < MAX_BUILDING_COUNT; ++k)
+	{	//빌딩과 애로우 충돌체크	
+		if (m_buildings[k] != NULL)
 		{
-			Xi = m_arrows[i]->getposX();
-			Yi = m_arrows[i]->getposY();
-			sizei = m_arrows[i]->getSize();
-			if (CollisionBox(Xi, m_objects[0]->getposX(), Yi, m_objects[0]->getposY(), sizei, m_objects[0]->getSize()))
-			{
-				m_objects[0]->minusLife(m_arrows[i]->getLife());
-				m_arrows[i]->setLife(0);
-				std::cout << "빌딩 체력:" << m_objects[0]->getLife() << "\n";
+			Xi = m_buildings[k]->getposX();
+			Yi = m_buildings[k]->getposY();
+			sizei = m_buildings[k]->getSize();
 
+			for (int i = 0; i < MAX_ARROWS_COUNT; ++i)
+			{
+				if ((m_arrows[i] != NULL) && (m_arrows[i]->getTeam()!=m_buildings[k]->getTeam()))
+				{
+					
+
+					if (CollisionBox(Xi, m_arrows[i]->getposX(), Yi, m_arrows[i]->getposY(), sizei, m_arrows[i]->getSize()))
+					{
+						m_buildings[k]->minusLife(m_arrows[i]->getLife());
+						m_arrows[i]->setLife(0);
+						std::cout << k << "번 빌딩 체력:" << m_buildings[k]->getLife() << "\n";
+					}
+				}
 			}
 
+
+			//빌딩과 불렛 충돌체크(PPT엔 없긴 함)
+			for (int i = 0; i < MAX_BULLETS_COUNT; ++i)
+			{
+				if ((m_bullets[i] != NULL) && (m_bullets[i]->getTeam() != m_buildings[k]->getTeam())) //빈공간이 아니면서 팀이 다를 때
+				{
+					if (CollisionBox(Xi, m_bullets[i]->getposX(), Yi, m_bullets[i]->getposY(), sizei, m_bullets[i]->getSize()))
+					{
+						m_buildings[k]->minusLife(m_bullets[i]->getLife());
+						m_bullets[i]->setLife(0);
+						std::cout << k << "번 빌딩 체력:" << m_buildings[k]->getLife() << "\n";
+
+					}
+				}
+			}
 		}
 	}
-
-
+	
 }
 
 
