@@ -99,10 +99,10 @@ void SceneMgr::InitGameField()
 	float Y = WINDOW_HEIGHT *0.375;
 
 	m_buildings[0] = new GameObject({ -X, -Y, 0 } , OBJECT_BUILDING, TEAM_ALLY);  //0~2 남  ...아군
-	m_buildings[1] = new GameObject({ 0, -Y-50, 0 }, OBJECT_BUILDING, TEAM_ALLY);
+	m_buildings[1] = new GameObject({ 0, -Y-25, 0 }, OBJECT_BUILDING, TEAM_ALLY);
 	m_buildings[2] = new GameObject({ X, -Y, 0 }, OBJECT_BUILDING, TEAM_ALLY);
 	m_buildings[3] = new GameObject({ -X, Y, 0 }, OBJECT_BUILDING, TEAM_ENEMY);     //3~5 북
-	m_buildings[4] = new GameObject({ 0, Y+50, 0 }, OBJECT_BUILDING, TEAM_ENEMY);
+	m_buildings[4] = new GameObject({ 0, Y+25, 0 }, OBJECT_BUILDING, TEAM_ENEMY);
 	m_buildings[5] = new GameObject({ X, Y, 0 }, OBJECT_BUILDING, TEAM_ENEMY);
 	
 	buldingNum = 6;
@@ -123,21 +123,48 @@ void SceneMgr::DrawGameObject()
 	GLuint m_texCharacter1 = g_Renderer->CreatePngTexture("./Resources/Blue_Slime.png");
 	GLuint m_texCharacter2 = g_Renderer->CreatePngTexture("./Resources/Gold_Slime.png");
 	GLuint texture = m_texCharacter1;
+	
+	RGBA Red{ 1,0,0,1 };
+	RGBA Blue{ 0,0,1,1 };
+	RGBA Color;
+
+	//캐릭터 라이프 그리기
+	for (int i = 0; i < 6; ++i)
+	{
+		if (m_buildings[i] != NULL)
+		{
+			if (m_buildings[i]->getTeam() == TEAM_ALLY) Color = Blue; else Color = Red;
+			auto ob = m_buildings[i];
+			float gauge = (float)(ob->getLife()) / (float)(ob->getMaxLife());
+			g_Renderer->DrawSolidRectGauge(ob->getposX(), ob->getposY() + ob->getSize()*0.65f, 0, ob->getSize(), HPBAR_HEIGHT,
+				Color.R, Color.G, Color.B, Color.A, gauge, ob->getLevel());
+		}
+	}
 	//빌딩 png 그리기
 	for (int i = 0; i < 6; ++i)
 	{
 		if (i > 2) texture = m_texCharacter2;
 
 		if (m_buildings[i] != NULL)
-		g_Renderer->DrawTexturedRect(m_buildings[i]->getposX(), m_buildings[i]->getposY(), m_buildings[i]->getposZ(), m_buildings[i]->getSize(),
-			m_buildings[i]->getR(), m_buildings[i]->getG(), m_buildings[i]->getB(), m_buildings[i]->getAlpha(), texture);
+			g_Renderer->DrawTexturedRect(m_buildings[i]->getposX(), m_buildings[i]->getposY(), m_buildings[i]->getposZ(), m_buildings[i]->getSize(),
+				m_buildings[i]->getR(), m_buildings[i]->getG(), m_buildings[i]->getB(), m_buildings[i]->getAlpha(), texture, m_buildings[i]->getLevel());
+	}
+	//캐릭터 라이프 그리기
+	for (int i = 0; i < MAX_OBJECTS_COUNT; ++i)
+	{
+		if (m_objects[i] != NULL)
+		{
+			auto ob= getObject(i);
+			g_Renderer->DrawSolidRectGauge(ob->getposX(), ob->getposY() + ob->getSize()*0.75f, 0, ob->getSize(), ob->getSize()*0.25f,
+				ob->getR(), ob->getG(), ob->getB(), ob->getAlpha(), ob->getLife()/ob->getMaxLife(), ob->getLevel());
+		}
 	}
 	//캐릭터 그리기
 	for (int i = 0; i < MAX_OBJECTS_COUNT; ++i)  
 	{
 		if (m_objects[i] != NULL)
 			g_Renderer->DrawSolidRect(getObject(i)->getposX(), getObject(i)->getposY(), getObject(i)->getposZ(),
-				getObject(i)->getSize(), getObject(i)->getR(), getObject(i)->getG(), getObject(i)->getB(), 1);
+				getObject(i)->getSize(), getObject(i)->getR(), getObject(i)->getG(), getObject(i)->getB(), 1, getObject(i)->getLevel());
 
 	}
 	//불렛 그리기
@@ -145,14 +172,14 @@ void SceneMgr::DrawGameObject()
 	{
 		if (m_bullets[i] != NULL)
 			g_Renderer->DrawSolidRect(getBullet(i)->getposX(), getBullet(i)->getposY(), getBullet(i)->getposZ(),
-				getBullet(i)->getSize(), getBullet(i)->getR(), getBullet(i)->getG(), getBullet(i)->getB(), 1);
+				getBullet(i)->getSize(), getBullet(i)->getR(), getBullet(i)->getG(), getBullet(i)->getB(), 1, getBullet(i)->getLevel());
 	}
 	//애로우 그리기
 	for (int i = 0; i < MAX_ARROWS_COUNT; ++i)
 	{
 		if (m_arrows[i] != NULL)
 			g_Renderer->DrawSolidRect(getArrow(i)->getposX(), getArrow(i)->getposY(), getArrow(i)->getposZ(),
-				getArrow(i)->getSize(), getArrow(i)->getR(), getArrow(i)->getG(), getArrow(i)->getB(), 1);
+				getArrow(i)->getSize(), getArrow(i)->getR(), getArrow(i)->getG(), getArrow(i)->getB(), 1, getArrow(i)->getLevel());
 	}
 }
 
@@ -235,7 +262,7 @@ void SceneMgr::Update(float elapsedTime)
 	}
 
 	// 캐릭터 생성
-	if (timeGetTime() - g_Timer_Unit > 5000.f)
+	if (timeGetTime() - g_Timer_Unit > 3000.f)
 	{
 		g_Timer_Unit = timeGetTime();
 		POS pos = { rand() % 500 - WINDOW_WIDTH / 2, max(rand() % 400,0) ,0 };
@@ -273,7 +300,7 @@ void SceneMgr::CollisionTest()
 					if (CollisionBox(Xi, m_buildings[k]->getposX(), Yi, m_buildings[k]->getposY(), sizei, m_buildings[k]->getSize()))
 					{   //빌딩과 캐릭터 충돌체크
 						m_buildings[k]->minusLife(m_objects[i]->getLife());
-						m_objects[i]->minusLife(m_objects[i]->getLife());
+						m_objects[i]->setLife(0);
 						std::cout << k << "번 빌딩 체력:" << m_buildings[k]->getLife() << "\n";
 					}
 				}
@@ -320,8 +347,6 @@ void SceneMgr::CollisionTest()
 			{
 				if ((m_arrows[i] != NULL) && (m_arrows[i]->getTeam()!=m_buildings[k]->getTeam()))
 				{
-					
-
 					if (CollisionBox(Xi, m_arrows[i]->getposX(), Yi, m_arrows[i]->getposY(), sizei, m_arrows[i]->getSize()))
 					{
 						m_buildings[k]->minusLife(m_arrows[i]->getLife());

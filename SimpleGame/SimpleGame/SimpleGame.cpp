@@ -21,6 +21,7 @@ SceneMgr *g_SceneMgr = NULL;
 
 DWORD g_startTime = 0;
 DWORD g_clickTime = 0;
+#define COOLTIME 3000.f
 
 void RenderScene(void)
 {
@@ -53,13 +54,13 @@ void MouseInput(int button, int state, int x, int y)
 			std::cout << "※북쪽은 적 진영입니다.\n"; return;
 		}
 
-		if (timeGetTime() - g_clickTime >= 7000.f)
+		if (timeGetTime() - g_clickTime >= COOLTIME)
 		{
 			g_clickTime = timeGetTime();
 			g_SceneMgr->CreateGameObject(x - WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - y, TEAM_ALLY);
 		}
 		else
-			std::cout << "※쿨타임:"<<(int)(7000.f - (timeGetTime() - g_clickTime ))/1000 <<"초 남았씁니다.\n"; return;
+			std::cout << "※쿨타임:"<<(int)(COOLTIME - (timeGetTime() - g_clickTime ))/1000 <<"초 남았씁니다.\n"; return;
 	}
 	RenderScene();
 }

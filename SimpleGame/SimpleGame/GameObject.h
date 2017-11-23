@@ -25,10 +25,12 @@ private:
 	float vY;
 	float Speed;
 	int dir;
-	int life;
-	int lifeTime;
+	int MaxLife;
+	int Life;
+	int LifeTime;
 	int Type;
 	int Team;
+	float Level;
 
 public:
 	float getposX() { return posX; }
@@ -39,12 +41,14 @@ public:
 	float getG() { return G; }
 	float getB() { return B; }
 	float getAlpha() { return Alpha; }
-	void minusLife(int minusValue) { life -= minusValue; }
-	void setLife(int value) { life = value; }
+	void minusLife(int minusValue) { Life -= minusValue;  }
+	void setLife(int value) { Life = value; }
 	int getType() { return Type; }
 	int getTeam() { return Team; }
-	int getLife() { return life; }
-	int getLifeTIme() { return lifeTime; }
+	int getMaxLife() { return MaxLife; }
+	int getLife() { return Life; }
+	int getLifeTIme() { return LifeTime; }
+	int getLevel() { return Level; }
 	
 public:
 	GameObject(POS pos, int type, int team);

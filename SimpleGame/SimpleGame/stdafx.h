@@ -17,3 +17,13 @@ typedef struct POS
 	float y = 0.f;
 	float z = 0.f;
 }POS;
+
+typedef struct RGBA
+{
+	float R = 0.f;
+	float G = 0.f;
+	float B = 0.f;
+	float A = 0.0f;
+}RGBA;
+
+#define HPBAR_HEIGHT 5.f
