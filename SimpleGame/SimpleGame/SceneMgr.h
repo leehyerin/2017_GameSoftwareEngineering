@@ -18,12 +18,13 @@ class SceneMgr
 	int bulletNum;
 	int arrowNum;
 	
+	float cumulativeTime = 0.f;
 public:
 	SceneMgr();
 	~SceneMgr();
 
 	void InitGameField();
-	void DrawGameObject(void);
+	void DrawGameObject(float fElapsedTimeinSecond);
 
 	void CreateGameObject(float x, float y, int type);
 	void CreateBullet();

@@ -2,17 +2,13 @@
 #include "SceneMgr.h"
 
 Renderer *g_Renderer = NULL;
-DWORD g_Timer = 0;
 DWORD g_Timer_Unit = 0;
 DWORD g_Timer_Arrow = 0;
 
 SceneMgr::SceneMgr()
 {	
 	g_Renderer = new Renderer(WINDOW_WIDTH, WINDOW_HEIGHT);
-	g_Timer = timeGetTime();
-	g_Timer_Unit = timeGetTime();
-	g_Timer_Arrow = timeGetTime();
-
+	  
 	if (!g_Renderer->IsInitialized())
 	{
 		std::cout << "Renderer could not be initialized.. \n";
@@ -49,7 +45,7 @@ void SceneMgr::CreateBullet()   //불렛 랜덤 생성 함수
 {
 	for (int i = 0; i < 6; ++i)
 	{
-		if (m_buildings[0] != NULL)
+		if (m_buildings[i] != NULL)
 		{
 			POS pos;
 			pos.x = m_buildings[i]->getposX();
@@ -118,17 +114,26 @@ void SceneMgr::InitGameField()
 		m_arrows[i] = NULL;
 }
 
-void SceneMgr::DrawGameObject()
+void SceneMgr::DrawGameObject(float fElapsedTimeinSecond)
 {
-	GLuint m_texCharacter1 = g_Renderer->CreatePngTexture("./Resources/Blue_Slime.png");
-	GLuint m_texCharacter2 = g_Renderer->CreatePngTexture("./Resources/Gold_Slime.png");
-	GLuint texture = m_texCharacter1;
-	
+	cumulativeTime += fElapsedTimeinSecond;
+
+	GLuint texBuilding1 = g_Renderer->CreatePngTexture("./Resources/Blue_Slime.png");
+	GLuint texBuilding2 = g_Renderer->CreatePngTexture("./Resources/Gold_Slime.png");
+	GLuint texCharacter = g_Renderer->CreatePngTexture("./Resources/bird_sprite.png");
+	GLuint texParticle = g_Renderer->CreatePngTexture("./Resources/particle.png");
+	GLuint bg_Texture = g_Renderer->CreatePngTexture("./Resources/Background.png");
+
 	RGBA Red{ 1,0,0,1 };
 	RGBA Blue{ 0,0,1,1 };
 	RGBA Color;
 
-	//캐릭터 라이프 그리기
+	GLuint currtexBuilding = texBuilding1;
+
+	//배경 그리기
+	g_Renderer->DrawTexturedRect(0, 0, 0, 500, 1, 1, 1, 1, bg_Texture, BG_LEVEL);
+
+	//빌딩 라이프 그리기
 	for (int i = 0; i < 6; ++i)
 	{
 		if (m_buildings[i] != NULL)
@@ -143,36 +148,40 @@ void SceneMgr::DrawGameObject()
 	//빌딩 png 그리기
 	for (int i = 0; i < 6; ++i)
 	{
-		if (i > 2) texture = m_texCharacter2;
+		if (i > 2) currtexBuilding = texBuilding2;
 
 		if (m_buildings[i] != NULL)
 			g_Renderer->DrawTexturedRect(m_buildings[i]->getposX(), m_buildings[i]->getposY(), m_buildings[i]->getposZ(), m_buildings[i]->getSize(),
-				m_buildings[i]->getR(), m_buildings[i]->getG(), m_buildings[i]->getB(), m_buildings[i]->getAlpha(), texture, m_buildings[i]->getLevel());
+				m_buildings[i]->getR(), m_buildings[i]->getG(), m_buildings[i]->getB(), m_buildings[i]->getAlpha(), currtexBuilding, m_buildings[i]->getLevel());
 	}
-	//캐릭터 라이프 그리기
+	//캐릭터, 라이프 그리기
 	for (int i = 0; i < MAX_OBJECTS_COUNT; ++i)
 	{
 		if (m_objects[i] != NULL)
 		{
-			auto ob= getObject(i);
+			//라이프바
+			auto ob= getObject(i); 
+			float gauge = (float)(ob->getLife()) / (float)(ob->getMaxLife());
+
 			g_Renderer->DrawSolidRectGauge(ob->getposX(), ob->getposY() + ob->getSize()*0.75f, 0, ob->getSize(), ob->getSize()*0.25f,
-				ob->getR(), ob->getG(), ob->getB(), ob->getAlpha(), ob->getLife()/ob->getMaxLife(), ob->getLevel());
+				ob->getR(), ob->getG(), ob->getB(), ob->getAlpha(), gauge, ob->getLevel());
+
+			g_Renderer->DrawTexturedRectSeq(ob->getposX(), ob->getposY(), ob->getposZ(),
+				ob->getSize(), ob->getR(), ob->getG(), ob->getB(), 1, texCharacter,
+				 ob->getCurrImg(),0,4,4,getObject(i)->getLevel());
 		}
 	}
-	//캐릭터 그리기
-	for (int i = 0; i < MAX_OBJECTS_COUNT; ++i)  
-	{
-		if (m_objects[i] != NULL)
-			g_Renderer->DrawSolidRect(getObject(i)->getposX(), getObject(i)->getposY(), getObject(i)->getposZ(),
-				getObject(i)->getSize(), getObject(i)->getR(), getObject(i)->getG(), getObject(i)->getB(), 1, getObject(i)->getLevel());
-
-	}
+	
 	//불렛 그리기
 	for (int i = 0; i < MAX_BULLETS_COUNT; ++i)
 	{
 		if (m_bullets[i] != NULL)
-			g_Renderer->DrawSolidRect(getBullet(i)->getposX(), getBullet(i)->getposY(), getBullet(i)->getposZ(),
-				getBullet(i)->getSize(), getBullet(i)->getR(), getBullet(i)->getG(), getBullet(i)->getB(), 1, getBullet(i)->getLevel());
+		{
+			auto ob = getBullet(i);
+
+			g_Renderer->DrawParticle(ob->getposX(), ob->getposY(), ob->getposZ(), ob->getSize(), ob->getR(), ob->getG(), ob->getB(), ob->getAlpha(),
+				0, 1, texParticle, cumulativeTime);
+		}
 	}
 	//애로우 그리기
 	for (int i = 0; i < MAX_ARROWS_COUNT; ++i)
@@ -184,16 +193,16 @@ void SceneMgr::DrawGameObject()
 }
 
 
-void SceneMgr::Update(float elapsedTime)
+void SceneMgr::Update(float elapsedTimeInSecond)
 {
 	CollisionTest();
-    // 빌딩 업데이트
-	for (int i = 0; i < MAX_BUILDING_COUNT; ++i)    
+	// 빌딩 업데이트
+	for (int i = 0; i < MAX_BUILDING_COUNT; ++i)
 	{
 		if (m_buildings[i] != NULL)
 		{
-			if (m_buildings[i]->getLife() <= 0 )   //life가 다 닳면 소멸
-			{																		  
+			if (m_buildings[i]->getLife() <= 0)   //life가 다 닳면 소멸
+			{
 				delete m_buildings[i];
 				m_buildings[i] = NULL;
 
@@ -201,13 +210,13 @@ void SceneMgr::Update(float elapsedTime)
 			}
 			else
 			{
-				m_buildings[i]->Update(elapsedTime, m_buildings[i]->getType());
+				m_buildings[i]->Update(elapsedTimeInSecond, m_buildings[i]->getType());
 			}
 		}
 	}
 
 	// 캐릭터 업데이트
-	for (int i = 0; i < MAX_OBJECTS_COUNT; ++i)    
+	for (int i = 0; i < MAX_OBJECTS_COUNT; ++i)
 	{
 		if (m_objects[i] != NULL)
 		{
@@ -215,51 +224,46 @@ void SceneMgr::Update(float elapsedTime)
 			{																		 //캐릭터
 				delete m_objects[i];
 				m_objects[i] = NULL;
+
 				--objectNum;
 			}
 			else
 			{
-				m_objects[i]->Update(elapsedTime, m_objects[i]->getType());
+				m_objects[i]->Update(elapsedTimeInSecond, m_objects[i]->getType());
 			}
 		}
 	}
 	//불렛 업데이트
-	for (int i = 0; i < MAX_BULLETS_COUNT; ++i)   
+	for (int i = 0; i < MAX_BULLETS_COUNT; ++i)
 	{
 		if (m_bullets[i] != NULL)
 		{
 			if (m_bullets[i]->getLife() <= 0 || m_bullets[i]->getLifeTIme() <= 0.f)
 			{
 				delete m_bullets[i];
-				m_bullets[i] = NULL;			
-				--bulletNum;  
+				m_bullets[i] = NULL;
+				--bulletNum;
 			}
 			else
-				m_bullets[i]->Update(elapsedTime, OBJECT_BULLET);
-
+				m_bullets[i]->Update(elapsedTimeInSecond, OBJECT_BULLET);
 		}
 	}
 	//애로우 업데이트
-	for (int i = 0; i < MAX_ARROWS_COUNT; ++i)   
+	for (int i = 0; i < MAX_ARROWS_COUNT; ++i)
 	{
 		if (m_arrows[i] != NULL)
 		{
 			if (m_arrows[i]->getLife() <= 0 || m_arrows[i]->getLifeTIme() <= 0.f)
 			{
 				delete m_arrows[i];
-				m_arrows[i] = NULL;				
-				--arrowNum;		
+				m_arrows[i] = NULL;
+				--arrowNum;
 			}
 			else
-				m_arrows[i]->Update(elapsedTime, OBJECT_ARROW);
+				m_arrows[i]->Update(elapsedTimeInSecond, OBJECT_ARROW);
 		}
 	}
 
-	if (timeGetTime() - g_Timer > 10000.f)  // 1000이 1초
-	{
-		g_Timer = timeGetTime();		
-		CreateBullet();                //불렛 생성
-	}
 
 	// 캐릭터 생성
 	if (timeGetTime() - g_Timer_Unit > 3000.f)
@@ -269,12 +273,22 @@ void SceneMgr::Update(float elapsedTime)
 		CreateGameObject(pos.x, pos.y, TEAM_ENEMY);
 	}
 
+	//애로우 생성
 	if (timeGetTime() - g_Timer_Arrow > 3000.f)
-	for (int i = 0; i < MAX_OBJECTS_COUNT; ++i)
 	{
-		g_Timer_Arrow = timeGetTime();
-		if (m_objects[i] != NULL)
-			CreateArrow(*m_objects[i]); //애로우 생성
+		for (int i = 0; i < MAX_OBJECTS_COUNT; ++i)
+		{
+			g_Timer_Arrow = timeGetTime();
+			if (m_objects[i] != NULL)
+				CreateArrow(*m_objects[i]);
+		}
+	}
+
+	// 불렛 생성
+	if (timeGetTime() - g_Timer_Unit > 1000.f)
+	{
+		g_Timer_Unit = timeGetTime();
+		CreateBullet();
 	}
 }
 
@@ -314,6 +328,7 @@ void SceneMgr::CollisionTest()
 					{
 						m_objects[i]->minusLife(m_bullets[j]->getLife());
 						m_bullets[j]->setLife(0);
+						std::cout<<"불렛-캐릭터 충돌 캐릭터 체력"<<m_objects[i]->getLife()<<"\n";
 					}
 				}
 			}
@@ -328,6 +343,8 @@ void SceneMgr::CollisionTest()
 						{
 							m_objects[i]->minusLife(m_arrows[j]->getLife());
 							m_arrows[j]->setLife(0);
+							std::cout << "불렛-애로우 충돌 캐릭터 체력" << m_objects[i]->getLife() << "\n";
+
 						}
 					}
 				}
@@ -357,7 +374,7 @@ void SceneMgr::CollisionTest()
 			}
 
 
-			//빌딩과 불렛 충돌체크(PPT엔 없긴 함)
+			//빌딩과 불렛 충돌체크
 			for (int i = 0; i < MAX_BULLETS_COUNT; ++i)
 			{
 				if ((m_bullets[i] != NULL) && (m_bullets[i]->getTeam() != m_buildings[k]->getTeam())) //빈공간이 아니면서 팀이 다를 때

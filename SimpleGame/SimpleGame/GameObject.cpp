@@ -33,7 +33,7 @@ GameObject::GameObject(POS pos, int type, int team)
 		case OBJECT_CHARACTER:
 			MaxLife = 20;
 			Life = 20;
-			Size = 10;
+			Size = 30;
 			Speed = 300;
 			Level = 0.2f;
 			if (team == TEAM_ALLY)
@@ -44,7 +44,7 @@ GameObject::GameObject(POS pos, int type, int team)
 		case OBJECT_BULLET:
 			MaxLife = 10;
 			Life = 10;
-			Size = 4;
+			Size = 10;
 			Speed = 600;
 			Level = 0.3f;
 			if (team == TEAM_ALLY)
@@ -68,15 +68,15 @@ GameObject::GameObject(POS pos, int type, int team)
 		}
 }
 
-void GameObject::Update(float elapsedTime, int type)
+void GameObject::Update(float elapsedTimeInSecond, int type)
 {		
-	float elapsedTimeInSecond = elapsedTime / 1000.f;
-
 	posX = posX + dir * vX * Speed * elapsedTimeInSecond;   
 	posY = posY + dir * vY * Speed * elapsedTimeInSecond;
 		
 	LifeTime -= elapsedTimeInSecond;
+	Timer += elapsedTimeInSecond;
 
+	++currImg;
 	switch (type)
 	{
 	case OBJECT_CHARACTER:
@@ -91,6 +91,7 @@ void GameObject::Update(float elapsedTime, int type)
 	case OBJECT_BULLET:
 		if (posX < -WINDOW_WIDTH / 2 || posX > WINDOW_WIDTH / 2 || posY < -WINDOW_HEIGHT / 2 || posY> WINDOW_HEIGHT / 2)
 			Life = 0.f; //¼Ò¸ê
+
 		break;
 	case OBJECT_ARROW:
 		if (posX < -WINDOW_WIDTH / 2 || posX > WINDOW_WIDTH / 2 || posY < -WINDOW_HEIGHT / 2 || posY> WINDOW_HEIGHT / 2)

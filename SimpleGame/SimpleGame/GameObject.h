@@ -31,6 +31,8 @@ private:
 	int Type;
 	int Team;
 	float Level;
+	float Timer=0;
+	int currImg = 0;
 
 public:
 	float getposX() { return posX; }
@@ -49,9 +51,12 @@ public:
 	int getLife() { return Life; }
 	int getLifeTIme() { return LifeTime; }
 	int getLevel() { return Level; }
+	int getTimer() { return Timer; };
+	void setTimer() { Timer = 0.f; }
+	int getCurrImg() { return currImg; }
 	
 public:
 	GameObject(POS pos, int type, int team);
-	void Update(float elapsedTIme,int type);
+	void Update(float elapsedTIme, int type);
 
 };

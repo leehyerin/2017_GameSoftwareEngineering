@@ -26,4 +26,6 @@ typedef struct RGBA
 	float A = 0.0f;
 }RGBA;
 
+#define BG_LEVEL 0.99f
+
 #define HPBAR_HEIGHT 5.f

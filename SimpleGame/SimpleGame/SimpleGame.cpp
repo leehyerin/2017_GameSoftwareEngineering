@@ -30,9 +30,11 @@ void RenderScene(void)
 	DWORD endTime = timeGetTime();
 	DWORD elapedTIme = endTime - g_startTime;
 	g_startTime = endTime;
+	
+	float elapsedTimeInSecond = elapedTIme / 1000.f;
 
-	g_SceneMgr->Update(elapedTIme);
-	g_SceneMgr->DrawGameObject();
+	g_SceneMgr->Update(elapsedTimeInSecond);
+	g_SceneMgr->DrawGameObject(elapsedTimeInSecond);
 	
 
 	glutSwapBuffers();
@@ -46,7 +48,6 @@ void Idle(void)
 
 void MouseInput(int button, int state, int x, int y)
 {
-	bool Flag;
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
 	{
 		if (y < WINDOW_HEIGHT / 2)
@@ -67,6 +68,8 @@ void MouseInput(int button, int state, int x, int y)
 
 void KeyInput(unsigned char key, int x, int y)
 {
+	if (key == VK_ESCAPE)
+		PostQuitMessage(0);
 	RenderScene();
 }
 
