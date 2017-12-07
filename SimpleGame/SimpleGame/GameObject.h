@@ -25,6 +25,7 @@ private:
 	float vY;
 	float Speed;
 	int dir;
+	int charDIR;
 	int MaxLife;
 	int Life;
 	int LifeTime;
@@ -45,6 +46,7 @@ public:
 	float getAlpha() { return Alpha; }
 	void minusLife(int minusValue) { Life -= minusValue;  }
 	void setLife(int value) { Life = value; }
+	int getCharDir() { return charDIR; }
 	int getType() { return Type; }
 	int getTeam() { return Team; }
 	int getMaxLife() { return MaxLife; }

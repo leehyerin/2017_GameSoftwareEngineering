@@ -1,10 +1,12 @@
 #pragma once
 #include "Renderer.h"
 #include "GameObject.h"
+#include "Sound.h"
+
 #define MAX_BUILDING_COUNT 6
 #define MAX_OBJECTS_COUNT 20
 #define MAX_BULLETS_COUNT 50
-#define MAX_ARROWS_COUNT 200000
+#define MAX_ARROWS_COUNT 20000
 
 class SceneMgr
 {
@@ -19,6 +21,11 @@ class SceneMgr
 	int arrowNum;
 	
 	float cumulativeTime = 0.f;
+
+	Sound* m_sound = new Sound();
+	int soundBG;
+	int soundExplosion;
+
 public:
 	SceneMgr();
 	~SceneMgr();
@@ -33,6 +40,7 @@ public:
 	bool CollisionBox(float Xi, float Xj, float Yi, float Yj, float size, float sizej);
 
 	void Update(float currTime);
+
 	GameObject* getObject(int n) const{ return m_objects[n]; }
 	GameObject* getBullet(int n) const { return m_bullets[n]; }
 	GameObject* getArrow(int n) const { return m_arrows[n]; }

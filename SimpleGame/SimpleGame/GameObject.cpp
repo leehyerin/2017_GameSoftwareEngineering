@@ -36,6 +36,8 @@ GameObject::GameObject(POS pos, int type, int team)
 			Size = 30;
 			Speed = 300;
 			Level = 0.2f;
+			if (vX > 0.f)
+				charDIR = CHAR_RIGHT;
 			if (team == TEAM_ALLY)
 				R = 0, G = 0, B = 1.f, Alpha = 1.f;
 			else
@@ -85,13 +87,15 @@ void GameObject::Update(float elapsedTimeInSecond, int type)
 			if (posX != posY)
 				dir *= -1;
 			else
-				dir *= -1; 
+				dir *= -1;
+
+			if (charDIR == CHAR_LEFT) charDIR = CHAR_RIGHT;
+			else charDIR = CHAR_LEFT;
 		}
 		break;
 	case OBJECT_BULLET:
 		if (posX < -WINDOW_WIDTH / 2 || posX > WINDOW_WIDTH / 2 || posY < -WINDOW_HEIGHT / 2 || posY> WINDOW_HEIGHT / 2)
 			Life = 0.f; //¼Ò¸ê
-
 		break;
 	case OBJECT_ARROW:
 		if (posX < -WINDOW_WIDTH / 2 || posX > WINDOW_WIDTH / 2 || posY < -WINDOW_HEIGHT / 2 || posY> WINDOW_HEIGHT / 2)

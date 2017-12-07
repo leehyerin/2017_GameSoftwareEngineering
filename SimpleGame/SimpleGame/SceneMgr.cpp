@@ -112,7 +112,11 @@ void SceneMgr::InitGameField()
 		m_bullets[i] = NULL;
 	for (int i = 0; i < MAX_ARROWS_COUNT; ++i)
 		m_arrows[i] = NULL;
-}
+
+	soundBG=m_sound->CreateSound("./Dependencies/SoundSamples/MF-W-90.XM");
+	m_sound->PlaySoundW(soundBG, true, 0.2f);
+
+	}
 
 void SceneMgr::DrawGameObject(float fElapsedTimeinSecond)
 {
@@ -168,7 +172,7 @@ void SceneMgr::DrawGameObject(float fElapsedTimeinSecond)
 
 			g_Renderer->DrawTexturedRectSeq(ob->getposX(), ob->getposY(), ob->getposZ(),
 				ob->getSize(), ob->getR(), ob->getG(), ob->getB(), 1, texCharacter,
-				 ob->getCurrImg(),0,4,4,getObject(i)->getLevel());
+				 ob->getCurrImg(),  ob->getCharDir(),  4,  4,  getObject(i)->getLevel());
 		}
 	}
 	
@@ -190,6 +194,8 @@ void SceneMgr::DrawGameObject(float fElapsedTimeinSecond)
 			g_Renderer->DrawSolidRect(getArrow(i)->getposX(), getArrow(i)->getposY(), getArrow(i)->getposZ(),
 				getArrow(i)->getSize(), getArrow(i)->getR(), getArrow(i)->getG(), getArrow(i)->getB(), 1, getArrow(i)->getLevel());
 	}
+
+	g_Renderer->DrawTextW(WINDOW_WIDTH / 2 - 50.f, WINDOW_HEIGHT / 2 - 20.f, GLUT_BITMAP_HELVETICA_18, 1.f, 1.f, 1.f, "hyerin");
 }
 
 
