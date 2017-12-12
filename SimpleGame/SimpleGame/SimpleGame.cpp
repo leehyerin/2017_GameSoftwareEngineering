@@ -26,7 +26,7 @@ DWORD g_clickTime = 0;
 void RenderScene(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(0.56f, 0.55f, 0.188f, 1.f);   
 	DWORD endTime = timeGetTime();
 	DWORD elapedTIme = endTime - g_startTime;
 	g_startTime = endTime;

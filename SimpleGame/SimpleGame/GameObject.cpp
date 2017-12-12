@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "GameObject.h"
-//#include "Defines.cpp"
 using namespace std;
-
 
 GameObject::GameObject(POS pos, int type, int team)
 {
@@ -17,7 +15,7 @@ GameObject::GameObject(POS pos, int type, int team)
 		vY = (float)((rand() % 100) - 50.f) / 100.f;
 
 		dir = 1;
-		LifeTime = 500.f;   //라이프타임을 넣음
+		LifeTime = 5000.f;   //라이프타임을 넣음
 		 
 		//타입에 따른 초기화
 		switch (type)
@@ -36,12 +34,31 @@ GameObject::GameObject(POS pos, int type, int team)
 			Size = 30;
 			Speed = 300;
 			Level = 0.2f;
+
 			if (vX > 0.f)
-				charDIR = CHAR_RIGHT;
+			{
+				float gradient = vY / vX;
+				if (gradient > 1.f || gradient < -1.f)   //기울기
+					charDIR = CHAR_UP;
+				else
+					charDIR = CHAR_RIGHT;
+				printf("%f\n",gradient);
+
+			}
+			else
+			{
+				float gradient = vY / vX;
+				if (gradient > 1.f || gradient < -1.f)  //기울기
+					charDIR = CHAR_DOWN;
+				else
+					charDIR = CHAR_LEFT;
+				printf("%f\n", gradient);
+
+			}
 			if (team == TEAM_ALLY)
 				R = 0, G = 0, B = 1.f, Alpha = 1.f;
 			else
-				R = 1.f, G = 0, B = 0, Alpha = 1.f;
+				R = 1.f, G = 1.f, B = 0, Alpha = 1.f;
 			break;
 		case OBJECT_BULLET:
 			MaxLife = 10;
@@ -50,15 +67,21 @@ GameObject::GameObject(POS pos, int type, int team)
 			Speed = 600;
 			Level = 0.3f;
 			if (team == TEAM_ALLY)
+			{
 				R = 0, G = 0, B = 1.f, Alpha = 1.f;
+				vY = 1;
+			}
 			else
-				R = 1.f, G = 0, B = 0, Alpha = 1.f;
+			{
+				R = 1.f, G = 1.f, B = 0, Alpha = 1.f;
+				vY = -1;
+			}
 			break;
 		case OBJECT_ARROW:
 			MaxLife = 10;
 			Life = 10;
 			Size = 4;
-			Speed = 100;
+			Speed = 600;
 			Level = 0.3f;
 			if (team == TEAM_ALLY)
 				R = 1.f, G = 1.f, B = 0, Alpha = 1.f;
@@ -78,7 +101,12 @@ void GameObject::Update(float elapsedTimeInSecond, int type)
 	LifeTime -= elapsedTimeInSecond;
 	Timer += elapsedTimeInSecond;
 
-	++currImg;
+	cumulativeTime += elapsedTimeInSecond;
+	if (cumulativeTime >= 0.2f)
+	{
+		cumulativeTime = 0;
+		++currImg;
+	}
 	switch (type)
 	{
 	case OBJECT_CHARACTER:
@@ -89,8 +117,23 @@ void GameObject::Update(float elapsedTimeInSecond, int type)
 			else
 				dir *= -1;
 
-			if (charDIR == CHAR_LEFT) charDIR = CHAR_RIGHT;
-			else charDIR = CHAR_LEFT;
+			switch (charDIR)
+			{
+			case CHAR_LEFT:
+				charDIR = CHAR_RIGHT;
+				break;
+			case CHAR_RIGHT:
+				charDIR = CHAR_LEFT;
+				break;
+			case CHAR_UP:
+				charDIR = CHAR_DOWN;
+				break;
+			case CHAR_DOWN:
+				charDIR = CHAR_UP;
+				break;
+			default:
+				break;
+			}
 		}
 		break;
 	case OBJECT_BULLET:

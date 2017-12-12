@@ -8,6 +8,7 @@
 #define MAX_BULLETS_COUNT 50
 #define MAX_ARROWS_COUNT 20000
 
+
 class SceneMgr
 {
 	GameObject* m_buildings[6];
@@ -20,11 +21,25 @@ class SceneMgr
 	int bulletNum;
 	int arrowNum;
 	
+	int ALLYbuildingActive = KING_INACT;
+	int ENEMYbuildingActive = KING_INACT;
 	float cumulativeTime = 0.f;
 
-	Sound* m_sound = new Sound();
+	Sound* m_BG = new Sound();
+	Sound* m_Coll = new Sound();
 	int soundBG;
-	int soundExplosion;
+	int soundCollision;
+	
+	GLuint texBuildingALLY;
+	GLuint texBuildingKINGALLY;
+	GLuint texBuildingENEMY;
+	GLuint texBuildingKINGENEMY;
+
+
+	GLuint texYelloChar;
+	GLuint texBlueChar;
+	GLuint texParticle;
+	GLuint bg_Texture;
 
 public:
 	SceneMgr();

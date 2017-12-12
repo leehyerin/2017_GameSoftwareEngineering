@@ -26,12 +26,16 @@ typedef struct RGBA
 	float A = 0.0f;
 }RGBA;
 
-#define CHAR_UP 3
+
+#define CHAR_UP 0
 #define CHAR_DOWN 2
-#define CHAR_LEFT 0
+#define CHAR_LEFT 3
 #define CHAR_RIGHT 1
 
 
 #define BG_LEVEL 0.99f
 
 #define HPBAR_HEIGHT 5.f
+
+#define KING_ACT 0
+#define KING_INACT	1

@@ -32,7 +32,8 @@ private:
 	int Type;
 	int Team;
 	float Level;
-	float Timer=0;
+	float Timer=0;  //이걸로 수정하쟈
+	float cumulativeTime=0;
 	int currImg = 0;
 
 public:
@@ -46,6 +47,7 @@ public:
 	float getAlpha() { return Alpha; }
 	void minusLife(int minusValue) { Life -= minusValue;  }
 	void setLife(int value) { Life = value; }
+	int getDitY() { return vY; }
 	int getCharDir() { return charDIR; }
 	int getType() { return Type; }
 	int getTeam() { return Team; }
