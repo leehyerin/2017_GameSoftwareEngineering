@@ -32,9 +32,7 @@ private:
 	int Type;
 	int Team;
 	float Level;
-	float Timer=0;  //이걸로 수정하쟈
-	float cumulativeTime=0;
-	int currImg = 0;
+	float cumulatedTime=0; 
 
 public:
 	float getposX() { return posX; }
@@ -47,7 +45,7 @@ public:
 	float getAlpha() { return Alpha; }
 	void minusLife(int minusValue) { Life -= minusValue;  }
 	void setLife(int value) { Life = value; }
-	int getDitY() { return vY; }
+	int getDir() { return dir; }
 	int getCharDir() { return charDIR; }
 	int getType() { return Type; }
 	int getTeam() { return Team; }
@@ -55,9 +53,7 @@ public:
 	int getLife() { return Life; }
 	int getLifeTIme() { return LifeTime; }
 	int getLevel() { return Level; }
-	int getTimer() { return Timer; };
-	void setTimer() { Timer = 0.f; }
-	int getCurrImg() { return currImg; }
+	float getcumulatedTime() { return cumulatedTime; }
 	
 public:
 	GameObject(POS pos, int type, int team);

@@ -14,7 +14,6 @@ GameObject::GameObject(POS pos, int type, int team)
 		vX = (float)((rand() % 100) - 50.f) / 100.f;
 		vY = (float)((rand() % 100) - 50.f) / 100.f;
 
-		dir = 1;
 		LifeTime = 5000.f;   //라이프타임을 넣음
 		 
 		//타입에 따른 초기화
@@ -34,26 +33,24 @@ GameObject::GameObject(POS pos, int type, int team)
 			Size = 30;
 			Speed = 300;
 			Level = 0.2f;
-
+			dir = 1;
 			if (vX > 0.f)
 			{
 				float gradient = vY / vX;
-				if (gradient > 1.f || gradient < -1.f)   //기울기
+				if (gradient > 1.25f || gradient < -1.25f)   //기울기
 					charDIR = CHAR_UP;
 				else
 					charDIR = CHAR_RIGHT;
 				printf("%f\n",gradient);
-
 			}
 			else
 			{
 				float gradient = vY / vX;
-				if (gradient > 1.f || gradient < -1.f)  //기울기
+				if (gradient > 1.25f || gradient < -1.25f)  //기울기
 					charDIR = CHAR_DOWN;
 				else
 					charDIR = CHAR_LEFT;
 				printf("%f\n", gradient);
-
 			}
 			if (team == TEAM_ALLY)
 				R = 0, G = 0, B = 1.f, Alpha = 1.f;
@@ -64,25 +61,28 @@ GameObject::GameObject(POS pos, int type, int team)
 			MaxLife = 10;
 			Life = 10;
 			Size = 10;
-			Speed = 600;
+			Speed = 300;
 			Level = 0.3f;
 			if (team == TEAM_ALLY)
 			{
 				R = 0, G = 0, B = 1.f, Alpha = 1.f;
-				vY = 1;
+				dir = -1.f;				
+				vY = -1.f;
 			}
 			else
 			{
 				R = 1.f, G = 1.f, B = 0, Alpha = 1.f;
-				vY = -1;
+				dir = 1.f;
+				vY = -1.f;
 			}
 			break;
 		case OBJECT_ARROW:
 			MaxLife = 10;
 			Life = 10;
 			Size = 4;
-			Speed = 600;
+			Speed = 500;
 			Level = 0.3f;
+			dir = 1;
 			if (team == TEAM_ALLY)
 				R = 1.f, G = 1.f, B = 0, Alpha = 1.f;
 			else
@@ -94,22 +94,16 @@ GameObject::GameObject(POS pos, int type, int team)
 }
 
 void GameObject::Update(float elapsedTimeInSecond, int type)
-{		
-	posX = posX + dir * vX * Speed * elapsedTimeInSecond;   
-	posY = posY + dir * vY * Speed * elapsedTimeInSecond;
-		
+{			
 	LifeTime -= elapsedTimeInSecond;
-	Timer += elapsedTimeInSecond;
+	cumulatedTime += elapsedTimeInSecond;
 
-	cumulativeTime += elapsedTimeInSecond;
-	if (cumulativeTime >= 0.2f)
-	{
-		cumulativeTime = 0;
-		++currImg;
-	}
 	switch (type)
 	{
 	case OBJECT_CHARACTER:
+		posX = posX + dir * vX * Speed * elapsedTimeInSecond;
+		posY = posY + dir * vY * Speed * elapsedTimeInSecond;
+
 		if (posX < -WINDOW_WIDTH / 2 || posX > WINDOW_WIDTH / 2 || posY < -WINDOW_HEIGHT / 2 || posY> WINDOW_HEIGHT / 2)
 		{
 			if (posX != posY)
@@ -137,10 +131,18 @@ void GameObject::Update(float elapsedTimeInSecond, int type)
 		}
 		break;
 	case OBJECT_BULLET:
+		posX = posX + dir * vX * Speed * elapsedTimeInSecond;
+		posY = posY + dir * vY * Speed * elapsedTimeInSecond;
+
 		if (posX < -WINDOW_WIDTH / 2 || posX > WINDOW_WIDTH / 2 || posY < -WINDOW_HEIGHT / 2 || posY> WINDOW_HEIGHT / 2)
 			Life = 0.f; //소멸
+		Alpha -= 0.001*cumulatedTime;
+		if (Alpha <= 0)
+			Life = 0.f;
 		break;
 	case OBJECT_ARROW:
+		posX = posX + dir * vX * Speed * elapsedTimeInSecond;
+		posY = posY + dir * vY * Speed * elapsedTimeInSecond;
 		if (posX < -WINDOW_WIDTH / 2 || posX > WINDOW_WIDTH / 2 || posY < -WINDOW_HEIGHT / 2 || posY> WINDOW_HEIGHT / 2)
 			Life = 0.f; //소멸
 		break;
