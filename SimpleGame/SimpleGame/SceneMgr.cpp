@@ -134,7 +134,14 @@ void SceneMgr::InitGameField()
 
 void SceneMgr::DrawGameObject(float fElapsedTimeinSecond)
 {
-	cumulativeTime += fElapsedTimeinSecond;
+	cumulatedTime += fElapsedTimeinSecond;
+	tTimer += fElapsedTimeinSecond;
+
+	if (cumulatedTime >= 0.2f)
+	{
+		cumulatedTime = 0;
+		++currImg;
+	}
 
 	GLuint tmp;
 
@@ -187,9 +194,8 @@ void SceneMgr::DrawGameObject(float fElapsedTimeinSecond)
 			//캐릭터
 			if (ob->getTeam() == TEAM_ALLY) tmp = texBlueChar; 
 			else tmp = texYelloChar;
-			g_Renderer->DrawTexturedRectSeq(ob->getposX(), ob->getposY(), ob->getposZ(),
-				ob->getSize(), ob->getR(), ob->getG(), ob->getB(), 1, tmp,
-				 ob->getCurrImg(),  ob->getCharDir(),  3,  4,  getObject(i)->getLevel());
+			g_Renderer->DrawTexturedRectSeq(ob->getposX(), ob->getposY(), ob->getposZ(),	ob->getSize(), ob->getR(), ob->getG(), ob->getB(), 
+				1, tmp,	currImg,  ob->getCharDir(),  3,  4,  getObject(i)->getLevel());
 		}
 	}
 	
@@ -201,7 +207,7 @@ void SceneMgr::DrawGameObject(float fElapsedTimeinSecond)
 			auto ob = getBullet(i);
 
 			g_Renderer->DrawParticle(ob->getposX(), ob->getposY(), ob->getposZ(), ob->getSize(), ob->getR(), ob->getG(), ob->getB(), ob->getAlpha(),
-				0, ob->getDitY(), texParticle, cumulativeTime);
+				0, ob->getDir(), texParticle, ob->getcumulatedTime(), ob->getLevel());
 		}
 	}
 	//애로우 그리기
@@ -212,13 +218,17 @@ void SceneMgr::DrawGameObject(float fElapsedTimeinSecond)
 				getArrow(i)->getSize(), getArrow(i)->getR(), getArrow(i)->getG(), getArrow(i)->getB(), 1, getArrow(i)->getLevel());
 	}
 
-	g_Renderer->DrawTextW(WINDOW_WIDTH / 2 - 50.f, WINDOW_HEIGHT / 2 - 20.f, GLUT_BITMAP_HELVETICA_18, 1.f, 1.f, 1.f, "hyerin");
+	//g_Renderer->DrawTextW(WINDOW_WIDTH / 2 - 50.f, WINDOW_HEIGHT / 2 - 20.f, GLUT_BITMAP_HELVETICA_18, 1.f, 1.f, 1.f, "hyerin");
+
+	g_Renderer->DrawParticleClimate(0, 0, 0, 1, 1, 1, 1, 1, -0.1, -0.1, texParticle, tTimer, 0.01f);
 }
 
 
 void SceneMgr::Update(float elapsedTimeInSecond)
 {
 	CollisionTest();
+	tTimer += elapsedTimeInSecond;
+
 	// 빌딩 업데이트
 	for (int i = 0; i < MAX_BUILDING_COUNT; ++i)
 	{
@@ -422,6 +432,7 @@ void SceneMgr::CollisionTest()
 
 						m_buildings[k]->minusLife(m_bullets[i]->getLife());
 						m_bullets[i]->setLife(0);
+						//g_Renderer->SetSceneTransform(1, 1, 1, 1);
 						std::cout << k << "번 빌딩 체력:" << m_buildings[k]->getLife() << "\n";
 					}
 				}

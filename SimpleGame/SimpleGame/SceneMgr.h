@@ -23,7 +23,10 @@ class SceneMgr
 	
 	int ALLYbuildingActive = KING_INACT;
 	int ENEMYbuildingActive = KING_INACT;
-	float cumulativeTime = 0.f;
+	float cumulatedTime = 0.f;
+	int currImg = 0;
+	float tTimer = 0;
+
 
 	Sound* m_BG = new Sound();
 	Sound* m_Coll = new Sound();
