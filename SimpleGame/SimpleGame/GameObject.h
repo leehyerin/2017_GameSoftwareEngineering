@@ -31,6 +31,7 @@ private:
 	int LifeTime;
 	int Type;
 	int Team;
+	int Kind;
 	float Level;
 	float cumulatedTime=0; 
 
@@ -43,6 +44,7 @@ public:
 	float getG() { return G; }
 	float getB() { return B; }
 	float getAlpha() { return Alpha; }
+	int getKind() { return Kind; }
 	void minusLife(int minusValue) { Life -= minusValue;  }
 	void setLife(int value) { Life = value; }
 	int getDir() { return dir; }
@@ -56,7 +58,7 @@ public:
 	float getcumulatedTime() { return cumulatedTime; }
 	
 public:
-	GameObject(POS pos, int type, int team);
+	GameObject(POS pos, int type, int team, int kind);
 	void Update(float elapsedTIme, int type);
 
 };

@@ -789,7 +789,7 @@ void Renderer::DrawBorderXY(float x, float y, float z, float width, float height
 	glDisableVertexAttribArray(attribPosition);
 }
 
-void Renderer::DrawTexturedRect(float x, float y, float z, float size, float r, float g, float b, float a, GLuint texID, float level)
+void Renderer::DrawTexturedRect(float x, float y, float z, float sizeX,float sizeY, float r, float g, float b, float a, GLuint texID, float level)
 {
 	GLuint tID = m_textureList[texID];
 
@@ -812,7 +812,7 @@ void Renderer::DrawTexturedRect(float x, float y, float z, float size, float r, 
 	GLuint u_Color = glGetUniformLocation(shader, "u_Color");
 	glUniform1f(glGetUniformLocation(shader, "u_Depth"), level);
 
-	glUniform4f(u_Trans, newX, newY, size*m_sceneScaleX, size*m_sceneScaleY);
+	glUniform4f(u_Trans, newX, newY, sizeX*m_sceneScaleX, sizeY*m_sceneScaleY);
 	glUniform4f(u_Color, r, g, b, a);
 
 	GLuint attribPosition = glGetAttribLocation(shader, "a_Position");

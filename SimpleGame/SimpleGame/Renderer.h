@@ -21,7 +21,7 @@ public:
 	void DrawBorderXY(float x, float y, float z, float width, float height, float r, float g, float b, float a, float level);
 	void DrawTexturedRectXY(float x, float y, float z, float sizeX, float sizeY, float r, float g, float b, float a, GLuint texID, float level);
 	void DrawTexturedRectSeqXY(float x, float y, float z, float sizeX, float sizeY, float r, float g, float b, float a, GLuint texID, int currSeqX, int currSeqY, int totalSeqX, int totalSeqY, float level);
-	void DrawTexturedRect(float x, float y, float z, float size, float r, float g, float b, float a, GLuint texID, float level);
+	void DrawTexturedRect(float x, float y, float z, float sizeX, float sizeY, float r, float g, float b, float a, GLuint texID, float level);
 	void DrawTexturedRectSeq(float x, float y, float z, float size, float r, float g, float b, float a, GLuint texID, int currSeqX, int currSeqY, int totalSeqX, int totalSeqY, float level);
 	void DrawParticle(float x, float y, float z, float size, float r, float g, float b, float a, float gDirX, float gDirY, GLuint texID, float timeInSeconds, float level);
 	void DrawParticleClimate(float x, float y, float z, float size, float r, float g, float b, float a, float gDirX, float gDirY, GLuint texID, float timeInSeconds, float level);

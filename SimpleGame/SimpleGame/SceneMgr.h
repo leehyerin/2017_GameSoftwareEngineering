@@ -25,13 +25,20 @@ class SceneMgr
 	int ENEMYbuildingActive = KING_INACT;
 	float cumulatedTime = 0.f;
 	int currImg = 0;
-	float tTimer = 0;
+	float coolTimer = 0;
+	int Energy = 0;
 
+	int ImgIdx = 0;
+	int widthImg = 0;
+	int heightImg = 0;
 
 	Sound* m_BG = new Sound();
 	Sound* m_Coll = new Sound();
 	int soundBG;
 	int soundCollision;
+
+	float ETimer=0;
+	int fever=0;
 	
 	GLuint texBuildingALLY;
 	GLuint texBuildingKINGALLY;
@@ -39,10 +46,11 @@ class SceneMgr
 	GLuint texBuildingKINGENEMY;
 
 
-	GLuint texYelloChar;
-	GLuint texBlueChar;
-	GLuint texParticle;
+	GLuint texYellowSprite, texBlueSprite, texOrangeSprite, texPurpleSprite;  //스프라이트
+	GLuint texYellow, texBlue,texOrange, texPurple; //덱
+	GLuint texParticle, texBullet;
 	GLuint bg_Texture;
+
 
 public:
 	SceneMgr();
@@ -51,7 +59,7 @@ public:
 	void InitGameField();
 	void DrawGameObject(float fElapsedTimeinSecond);
 
-	void CreateGameObject(float x, float y, int type);
+	void CreateGameObject(float x, float y, int type, int kind);
 	void CreateBullet();
 	void CreateArrow( GameObject& const);
 	void CollisionTest();
@@ -62,6 +70,4 @@ public:
 	GameObject* getObject(int n) const{ return m_objects[n]; }
 	GameObject* getBullet(int n) const { return m_bullets[n]; }
 	GameObject* getArrow(int n) const { return m_arrows[n]; }
-
 };
-

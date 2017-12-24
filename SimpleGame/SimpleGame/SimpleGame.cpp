@@ -21,7 +21,8 @@ SceneMgr *g_SceneMgr = NULL;
 
 DWORD g_startTime = 0;
 DWORD g_clickTime = 0;
-#define COOLTIME 3000.f
+#define COOLTIME 500.f
+int CHAR_KIND = CHAR_KIND_Purple_TANK;
 
 void RenderScene(void)
 {
@@ -48,20 +49,30 @@ void Idle(void)
 
 void MouseInput(int button, int state, int x, int y)
 {
+
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
 	{
-		if (y < WINDOW_HEIGHT / 2)
+
+		if (y > WINDOW_HEIGHT / 2 + 300)
 		{
-			std::cout << "※북쪽은 적 진영입니다.\n"; return;
+			if (x >=  285)			CHAR_KIND = CHAR_KIND_BLUE_SPEEDY;
+			else if (x >=235 )		CHAR_KIND = CHAR_KIND_Purple_TANK;
+			else if (x >= 185)		CHAR_KIND = CHAR_KIND_YELLOW_BIG;
+			else if (x >=  135)		CHAR_KIND = CHAR_KIND_Orange_DOZEN;
+		}
+
+		if (y < WINDOW_HEIGHT / 2 - 50 || y > WINDOW_HEIGHT / 2 +300)
+		{
+			std::cout << "※CREATE_ERROR\n"; return;
 		}
 
 		if (timeGetTime() - g_clickTime >= COOLTIME)
 		{
 			g_clickTime = timeGetTime();
-			g_SceneMgr->CreateGameObject(x - WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - y, TEAM_ALLY);
+			g_SceneMgr->CreateGameObject(x - WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - y, TEAM_ALLY, CHAR_KIND);
 		}
 		else
-			std::cout << "※쿨타임:"<<(int)(COOLTIME - (timeGetTime() - g_clickTime ))/1000 <<"초 남았씁니다.\n"; return;
+			std::cout << "※COOLTIME:" << (int)(COOLTIME - (timeGetTime() - g_clickTime)) / 1000 << "sec.\n"; return;
 	}
 	RenderScene();
 }
