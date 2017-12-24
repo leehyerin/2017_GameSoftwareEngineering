@@ -249,7 +249,7 @@ void SceneMgr::DrawGameObject(float fElapsedTimeinSecond)
 	}
 	//덱그리기
 	g_Renderer->DrawTexturedRect(-WINDOW_WIDTH / 2 + 150, -WINDOW_HEIGHT / 2 + 50, 0, 30, 30, 1, 1, 1, 1, texOrange, 0.2f);
-	g_Renderer->DrawTextW(-WINDOW_WIDTH / 2 + 150, -WINDOW_HEIGHT / 2 + 20, GLUT_BITMAP_TIMES_ROMAN_24, 1.f, 1.f, 1.f, "6");
+	g_Renderer->DrawTextW(-WINDOW_WIDTH / 2 + 150, -WINDOW_HEIGHT / 2 + 20, GLUT_BITMAP_TIMES_ROMAN_24, 1.f, 1.f, 1.f, "1");
 
 	g_Renderer->DrawTexturedRect(-WINDOW_WIDTH / 2 + 200, -WINDOW_HEIGHT / 2 + 50, 0, 30, 30, 1, 1, 1, 1, texYellow, 0.2f);
 	g_Renderer->DrawTextW(-WINDOW_WIDTH / 2 + 200, -WINDOW_HEIGHT / 2 + 20, GLUT_BITMAP_TIMES_ROMAN_24, 1, 1, 1, "2");
@@ -257,9 +257,9 @@ void SceneMgr::DrawGameObject(float fElapsedTimeinSecond)
 	g_Renderer->DrawTexturedRect(-WINDOW_WIDTH / 2 + 250, -WINDOW_HEIGHT / 2 + 50, 0, 30, 30, 1, 1, 1, 1, texPurple, 0.2f);
 	g_Renderer->DrawTextW(-WINDOW_WIDTH / 2 + 250, -WINDOW_HEIGHT / 2 + 20, GLUT_BITMAP_TIMES_ROMAN_24, 1, 1, 1, "4");
 	g_Renderer->DrawTexturedRect(-WINDOW_WIDTH / 2 + 300, -WINDOW_HEIGHT / 2 + 50, 0, 30, 30, 1, 1, 1, 1, texBlue, 0.2f);
-	g_Renderer->DrawTextW(-WINDOW_WIDTH / 2 + 300, -WINDOW_HEIGHT / 2 + 20, GLUT_BITMAP_TIMES_ROMAN_24, 1, 1, 1, "3");
+	g_Renderer->DrawTextW(-WINDOW_WIDTH / 2 + 300, -WINDOW_HEIGHT / 2 + 20, GLUT_BITMAP_TIMES_ROMAN_24, 0, 0, 0, "3");
 
-	g_Renderer->DrawTextW(-WINDOW_WIDTH / 2 + 50, -WINDOW_HEIGHT / 2 + 50, GLUT_BITMAP_TIMES_ROMAN_24, 0.f, 0.f, 0.f, c_cooltime);
+	g_Renderer->DrawTextW(-WINDOW_WIDTH / 2 + 50, -WINDOW_HEIGHT / 2 + 50, GLUT_BITMAP_TIMES_ROMAN_24, 1.f, 1.f, 1.f, c_cooltime);
 
 	//캐릭터, 라이프 그리기
 	for (int i = 0; i < MAX_OBJECTS_COUNT; ++i)
